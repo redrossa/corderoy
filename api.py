@@ -11,6 +11,18 @@ def get_api_settings():
     return jsonify(settings)
 
 
+@api.route('/api/parts')
+def get_api_parts():
+    return jsonify([k for k in settings['tree'].keys()])
+
+
+@api.route('/api/collections')
+def get_api_collections():
+    part = request.args.get('part')
+    parts = [part] if part else settings['tree'].keys()
+    return jsonify([k for p in parts for k in settings['tree'][p].keys()])
+
+
 @api.route('/api/products')
 def get_api_products():
     collection = request.args.get('collection')
