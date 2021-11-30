@@ -3,7 +3,6 @@ import axios from "axios";
 import classNames from 'classnames';
 import {Navbar, NavBrand, NavGroup, NavScroller} from "../../components/Navbar";
 import {Link} from "react-router-dom";
-import Home from "../Home";
 
 export default class Navigation extends React.Component {
   constructor(props) {

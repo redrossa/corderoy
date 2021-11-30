@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import classNames from 'classnames';
 import {useParams} from 'react-router-dom';
 import axios from 'axios';
+import {Card, CardTitle, CardBody} from '../../components/Card';
 
 export default function Catalog(props) {
   const {collection} = useParams();
@@ -22,7 +23,24 @@ export default function Catalog(props) {
         </div>
         <div className="cards">
           {products.map(p => (
-            <img src={`https://m.media-amazon.com/images/G/01/Shopbop/p${p.product.colors[0].images[0].src}`}/>
+            <Card
+                className="card"
+                src={`https://m.media-amazon.com/images/G/01/Shopbop/p${p.product.colors[0].images[0].src}`}
+                alt={p.product.shortDescription}
+                width={"12vw"}
+            >
+              <div className="card-annotation">
+                <CardTitle>Hello there</CardTitle>
+                <CardBody className="card-body">
+                  <div className="desc">
+                    {p.product.shortDescription}
+                  </div>
+                  <div className="price-tag">
+                    {p.product.retailPrice.price}
+                  </div>
+                </CardBody>
+              </div>
+            </Card>
           ))}
         </div>
       </div>

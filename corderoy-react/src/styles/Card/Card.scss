@@ -1,0 +1,12 @@
+.Card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  img {
+    width: 102%;
+    object-fit: cover;
+    display: block;
+    margin: auto;
+  }
+}

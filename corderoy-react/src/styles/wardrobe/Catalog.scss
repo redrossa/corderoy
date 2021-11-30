@@ -1,14 +1,35 @@
-.Catalog .title {
-  text-align: center;
-}
+.Catalog {
+  .title {
+    text-align: center;
+  }
 
-.Catalog .cards {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 20px;
+  .cards {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
 
-  img {
-    width: 10rem;
+    .card {
+      border: 1px solid lightgray;
+      border-radius: 1rem;
+
+      .card-annotation {
+        padding: 0.5rem;
+
+        .card-body {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          gap: 1rem;
+
+          .desc {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
   }
 }
