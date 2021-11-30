@@ -1,0 +1,12 @@
+.NavScroller {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+    overflow-x: scroll;
+    white-space: nowrap;
+    width: 60vw;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}

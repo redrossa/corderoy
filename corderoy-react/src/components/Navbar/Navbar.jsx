@@ -1,4 +1,4 @@
-import '../../styles/Navbar/Navbar.css'
+import '../../styles/Navbar/Navbar.scss'
 import React from 'react';
 import classNames from 'classnames';
 

@@ -1,8 +1,11 @@
 import React from 'react';
 import axios from "axios";
-import {Navbar, NavBrand, NavGroup, NavScroller} from '../components/Navbar';
+import classNames from 'classnames';
+import {Navbar, NavBrand, NavGroup, NavScroller} from "../../components/Navbar";
+import {Link} from "react-router-dom";
+import Home from "../Home";
 
-export default class Wardrobe extends React.Component {
+export default class Navigation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -19,19 +22,21 @@ export default class Wardrobe extends React.Component {
 
   render() {
     return (
-        <div className="Wardrobe page">
+        <div className={classNames('Navigation', this.props.className)}>
           <Navbar>
             <NavBrand>
               Corderoy
             </NavBrand>
             <NavGroup>
               <NavScroller>
-                {this.state.collections}
+                {this.state.collections.map(coll => (
+                    <Link to={`/wardrobe/${coll}`}>
+                      {coll}
+                    </Link>
+                ))}
               </NavScroller>
             </NavGroup>
           </Navbar>
-          cart preview
-          catalog
         </div>
     );
   }

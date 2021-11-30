@@ -8,7 +8,7 @@ export default class Outfit extends React.Component {
           cart
           description
           photos
-          comments
+          comment
         </div>
     );
   }
