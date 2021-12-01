@@ -8,6 +8,7 @@ export default class Card extends React.Component {
         <div
             className={classNames('Card', this.props.className)}
             style={{width: this.props.width}}
+            onClick={this.props.onClick}
         >
           <img src={this.props.src} alt={this.props.alt}/>
           {this.props.children}

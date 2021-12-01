@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import {useParams} from 'react-router-dom';
 import axios from 'axios';
 import {Card, CardTitle, CardBody} from '../../components/Card';
+import {UserSelection} from './UserSelection';
 
 export default function Catalog(props) {
   const {collection} = useParams();
@@ -23,24 +24,29 @@ export default function Catalog(props) {
         </div>
         <div className="cards">
           {products.map(p => (
-            <Card
-                className="card"
-                src={`https://m.media-amazon.com/images/G/01/Shopbop/p${p.product.colors[0].images[0].src}`}
-                alt={p.product.shortDescription}
-                width={"12vw"}
-            >
-              <div className="card-annotation">
-                <CardTitle>{p.product.designerName}</CardTitle>
-                <CardBody className="card-body">
-                  <div className="desc">
-                    {p.product.shortDescription}
-                  </div>
-                  <div className="price-tag">
-                    {p.product.retailPrice.price}
-                  </div>
-                </CardBody>
-              </div>
-            </Card>
+              <UserSelection.Consumer>
+                {({outfit, setOutfit}) => (
+                    <Card
+                        className="card"
+                        src={`https://m.media-amazon.com/images/G/01/Shopbop/p${p.product.colors[0].images[0].src}`}
+                        alt={p.product.shortDescription}
+                        width={"12vw"}
+                        onClick={() => setOutfit(p.product.shortDescription)}
+                    >
+                      <div className="card-annotation">
+                        <CardTitle>{p.product.designerName}</CardTitle>
+                        <CardBody className="card-body">
+                          <div className="desc">
+                            {p.product.shortDescription}
+                          </div>
+                          <div className="price-tag">
+                            {p.product.retailPrice.price}
+                          </div>
+                        </CardBody>
+                      </div>
+                    </Card>
+                )}
+              </UserSelection.Consumer>
           ))}
         </div>
       </div>
