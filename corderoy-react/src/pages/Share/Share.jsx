@@ -1,13 +1,13 @@
 import React from 'react';
-import {Navbar} from "../components/Navbar";
+import Navigation from './Navigation';
 
 export default class Share extends React.Component {
   render() {
     return (
         <div className="Share page">
-          <Navbar>
+          <Navigation>
 
-          </Navbar>
+          </Navigation>
           large cart
           form
         </div>

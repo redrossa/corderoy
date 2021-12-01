@@ -1,4 +1,4 @@
-import '../../styles/wardrobe/Catalog.scss'
+import '../../styles/Wardrobe/Catalog.scss'
 import React, {useEffect, useState} from 'react';
 import classNames from 'classnames';
 import {useParams} from 'react-router-dom';

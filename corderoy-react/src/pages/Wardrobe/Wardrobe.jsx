@@ -1,4 +1,4 @@
-import '../../styles/wardrobe/Wardrobe.scss';
+import '../../styles/Wardrobe/Wardrobe.scss';
 import React from 'react';
 import {UserSelection} from './UserSelection';
 import Navigation from './Navigation';

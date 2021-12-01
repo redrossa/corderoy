@@ -1,4 +1,4 @@
-import '../../styles/wardrobe/Cart.scss';
+import '../../styles/Wardrobe/Cart.scss';
 import React from 'react';
 import classNames from 'classnames';
 import {UserSelection} from './UserSelection';
