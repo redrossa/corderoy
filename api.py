@@ -63,7 +63,7 @@ def get_api_products():
 
     products = [requests.get(url).json()['products'] for url in src_urls]
     products = [p for sublist in products for p in sublist]
-    for p, uri in zip(products, uris):
+    for p in products:
         p['part'] = part
 
     return jsonify(products)
