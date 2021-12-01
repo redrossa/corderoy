@@ -1,0 +1,23 @@
+.Cart .items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+
+    .item-card {
+      width: 6rem;
+      height: 6rem;
+      border-radius: 0.8rem;
+    }
+
+    .item-label {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}

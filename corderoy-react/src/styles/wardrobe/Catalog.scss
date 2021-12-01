@@ -11,11 +11,18 @@
     justify-content: center;
 
     .card {
+      width: 12vw;
       border: 1px solid lightgray;
       border-radius: 1rem;
 
       .card-annotation {
         padding: 0.5rem;
+
+        .card-title {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
 
         .card-body {
           display: flex;

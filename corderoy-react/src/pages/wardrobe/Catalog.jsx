@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import classNames from 'classnames';
 import {useParams} from 'react-router-dom';
 import axios from 'axios';
-import {Card, CardTitle, CardBody} from '../../components/Card';
+import {Card, CardTitle, CardBody, CardImg} from '../../components/Card';
 import {UserSelection} from './UserSelection';
 
 export default function Catalog(props) {
@@ -25,19 +25,18 @@ export default function Catalog(props) {
         <div className="cards">
           {products.map(p => (
               <UserSelection.Consumer>
-                {({outfit, setOutfit}) => (
-                    <Card
-                        className="card"
-                        src={`https://m.media-amazon.com/images/G/01/Shopbop/p${p.product.colors[0].images[0].src}`}
-                        alt={p.product.shortDescription}
-                        width={"12vw"}
-                        onClick={() => setOutfit(p.product.shortDescription)}
-                    >
+                {({addProduct}) => (
+                    <Card className="card" onClick={() => addProduct(p)}>
+                      <CardImg
+                          className="card-img"
+                          src={`https://m.media-amazon.com/images/G/01/Shopbop/p${p.product.colors[0].images[0].src}`}
+                          alt={p.product.shortDescription}
+                      />
                       <div className="card-annotation">
-                        <CardTitle>{p.product.designerName}</CardTitle>
+                        <CardTitle className="card-title">{p.product.shortDescription}</CardTitle>
                         <CardBody className="card-body">
                           <div className="desc">
-                            {p.product.shortDescription}
+                            {p.product.designerName}
                           </div>
                           <div className="price-tag">
                             {p.product.retailPrice.price}

@@ -1,6 +1,3 @@
-import React, {createContext} from 'react';
+import {createContext} from 'react';
 
-export const UserSelection = createContext({
-  outfit: "",
-  setOutfit: () => {}
-})
+export const UserSelection = createContext();
