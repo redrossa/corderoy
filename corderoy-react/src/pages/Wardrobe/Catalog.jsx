@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import {useParams} from 'react-router-dom';
 import axios from 'axios';
 import {Card, CardTitle, CardBody, CardImg} from '../../components/Card';
-import {UserSelection} from './UserSelection';
+import {UserSelection} from '../../components/UserSelection';
 
 export default function Catalog(props) {
   const {collection} = useParams();

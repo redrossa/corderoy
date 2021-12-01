@@ -1,7 +1,7 @@
 import '../../styles/Wardrobe/Cart.scss';
 import React from 'react';
 import classNames from 'classnames';
-import {UserSelection} from './UserSelection';
+import {UserSelection} from '../../components/UserSelection';
 import {Card, CardImg} from '../../components/Card';
 import {Link} from 'react-router-dom';
 
