@@ -30,7 +30,7 @@ export default function Catalog(props) {
                 width={"12vw"}
             >
               <div className="card-annotation">
-                <CardTitle>Hello there</CardTitle>
+                <CardTitle>{p.product.designerName}</CardTitle>
                 <CardBody className="card-body">
                   <div className="desc">
                     {p.product.shortDescription}

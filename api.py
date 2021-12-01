@@ -32,11 +32,13 @@ def get_api_products():
     limit = request.args.get('limit', default=40)
     query = request.args.get('q')
 
-    # get the uris in settings of the input collection
+    # get the part and uris of the input collection from settings
+    part = None
     uris = None
-    for part, part_items in settings['tree'].items():
+    for p, part_items in settings['tree'].items():
         for coll, uri_items in part_items.items():
             if coll == collection:
+                part = p
                 uris = uri_items
                 break
 
@@ -62,7 +64,7 @@ def get_api_products():
     products = [requests.get(url).json()['products'] for url in src_urls]
     products = [p for sublist in products for p in sublist]
     for p, uri in zip(products, uris):
-        p['customUri'] = uri
+        p['part'] = part
 
     return jsonify(products)
 
