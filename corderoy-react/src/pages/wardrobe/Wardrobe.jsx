@@ -18,12 +18,12 @@ export default class Wardrobe extends React.Component {
       }
     };
     this.addProduct = this.addProduct.bind(this);
+    this.removeProduct = this.removeProduct.bind(this);
   }
 
   addProduct(item) {
     const {part, product} = item;
     const outfit = this.state.outfit;
-    console.log(item);
     switch (part) {
       case "Upper":
         outfit["Upper"][product.productCode] = item;
@@ -46,6 +46,31 @@ export default class Wardrobe extends React.Component {
     this.setState({outfit: outfit});
   }
 
+  removeProduct(item) {
+    const {part, product} = item;
+    const outfit = this.state.outfit;
+    switch (part) {
+      case "Upper":
+        delete outfit["Upper"][product.productCode];
+        break;
+      case "Lower":
+        delete outfit["Lower"][product.productCode];
+        break;
+      case "Shoes":
+        delete outfit["Shoes"][product.productCode];
+        break;
+      case "Bags":
+        delete outfit["Bags"][product.productCode];
+        break;
+      case "Accessories":
+        delete outfit["Accessories"][product.productCode];
+        break;
+      default:
+        return;
+    }
+    this.setState({outfit: outfit});
+  }
+
   render() {
     return (
         <div className="Wardrobe page">
@@ -54,7 +79,8 @@ export default class Wardrobe extends React.Component {
             <UserSelection.Provider
                 value={{
                   outfit: this.state.outfit,
-                  addProduct: this.addProduct
+                  addProduct: this.addProduct,
+                  removeProduct: this.removeProduct
                 }}
             >
               <Cart className="cart" />
