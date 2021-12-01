@@ -11,7 +11,6 @@ function App() {
           <Routes>
             <Route path="/" exact element={<Home />} />
             <Route path="/wardrobe" element={<Wardrobe />}>
-              <Route path="" element={<Catalog />} />
               <Route path=":collection" element={<Catalog />} />
             </Route>
             <Route path="/share" element={<Share />} />

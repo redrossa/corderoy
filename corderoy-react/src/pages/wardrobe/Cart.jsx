@@ -3,6 +3,7 @@ import React from 'react';
 import classNames from 'classnames';
 import {UserSelection} from './UserSelection';
 import {Card, CardImg} from '../../components/Card';
+import {Link} from 'react-router-dom';
 
 export default function Cart(props) {
   return (
@@ -39,6 +40,11 @@ export default function Cart(props) {
             )
           }
         </UserSelection.Consumer>
+        <Link className="link" to={"/share"}>
+          <div className="proceed-btn">
+            Proceed to share
+          </div>
+        </Link>
       </div>
   );
 }
