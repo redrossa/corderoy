@@ -2,7 +2,7 @@ import '../../styles/Wardrobe/Wardrobe.scss';
 import React from 'react';
 import Navigation from './Navigation';
 import {Outlet} from 'react-router-dom';
-import Cart from './Cart';
+import Preview from './Preview';
 
 export default class Wardrobe extends React.Component {
   render() {
@@ -10,7 +10,7 @@ export default class Wardrobe extends React.Component {
         <div className="Wardrobe page">
           <Navigation />
           <div className="content">
-            <Cart className="cart" />
+            <Preview className="cart" />
             <Outlet />
           </div>
         </div>

@@ -25,8 +25,8 @@ export default function Catalog(props) {
         <div className="cards">
           {products.map(p => (
               <UserSelection.Consumer>
-                {({addProduct}) => (
-                    <Card className="card" onClick={() => addProduct(p)}>
+                {outfit => (
+                    <Card className="card" onClick={() => outfit.add(p)}>
                       <CardImg
                           className="card-img"
                           src={`https://m.media-amazon.com/images/G/01/Shopbop/p${p.product.colors[0].images[0].src}`}
