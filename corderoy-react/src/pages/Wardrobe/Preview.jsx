@@ -8,13 +8,14 @@ import {Link} from 'react-router-dom';
 export default function Preview(props) {
   return (
       <div className={classNames('Preview', props.className)}>
-        <h1>Your outfit list</h1>
+        <h1>Your outfit selection</h1>
         <UserSelection.Consumer>
           {outfit => (
                 <div>
                   {Object.entries(outfit.items).map(([part, partItems]) => (
                       <div>
                         <div className="part-header">
+                          <h5>{part}</h5>
                         </div>
                         <div className="items">
                           {Object.keys(partItems).length === 0 ?

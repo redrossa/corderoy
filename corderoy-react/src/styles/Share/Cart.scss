@@ -1,0 +1,112 @@
+.Cart .container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  //gap: 2rem;
+  max-height: 75vh;
+
+  .items-preview {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    overflow-y: scroll;
+
+    .items-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      margin-right: 1rem;
+
+      .item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 5vw;
+
+        .left-col {
+          display: flex;
+          flex-direction: row;
+          gap: 1rem;
+          align-items: center;
+
+          .item-card {
+            width: 10vw;
+            height: 10vw;
+            border-radius: 2rem;
+          }
+
+          .desc {
+            font-weight: bold;
+          }
+        }
+
+        .right-col {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+        }
+      }
+    }
+  }
+
+  .share-bar {
+    height: 100%;
+    background-color: lightgray;
+    border-radius: 0 2rem 2rem 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    $input-padding: 1rem;
+
+    .top {
+      flex-grow: 1;
+
+      input[type=text], textarea {
+        padding: $input-padding;
+        width: 20vw;
+        border: none;
+        outline: none;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+        resize: none;
+        font-family: inherit;
+        font-size: inherit;
+        color: black;
+        background-color: transparent;
+      }
+
+      textarea {
+        height: 100%;
+      }
+    }
+
+    hr {
+      width: calc(100% - 2 * #{$input-padding});
+      height: 1px;
+      background: gray;
+      margin: 0 auto;
+      border: none;
+    }
+
+    .bottom {
+      display: flex;
+      flex-direction: column;
+
+      .total {
+        padding: $input-padding;
+      }
+
+      button {
+        color: white;
+        width: 100%;
+        padding: 1rem 2rem;
+        font-size: inherit;
+        background-color: #E22854;
+        border: none;
+      }
+    }
+  }
+}
