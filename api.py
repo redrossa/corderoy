@@ -97,6 +97,31 @@ def post_api_outfit():
     return '/'
 
 
+@api.route('/api/outfits')
+def get_api_outfits():
+    """
+    Fetch all outfits containing a particular...
+        - theme*
+        - product
+        - product collection*
+        - product part*
+        - price range
+        - keyword
+    Then sort result by...
+        - likes
+        - date
+        - price
+    :return: sorted list of queried outfits
+    """
+    theme = request.args.get('theme')
+    sort = request.args.get('sort', default='likes')  # likes | price | date
+    min_price = request.args.get('minPrice')
+    max_price = request.args.get('maxPrice')
+    limit = request.args.get('limit', default=40)
+    query = request.args.get('q')
+    return '/'
+
+
 def build_products_url(cat_id, **kwargs):
     url = f'{settings["baseUrl"]}/public/categories/{cat_id}/products'
     params = [f'{k}={v}' for k, v in kwargs.items() if v]
