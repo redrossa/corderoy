@@ -1,9 +1,25 @@
 import json
+import re
+import uuid
+
 import requests
+import boto3
 from flask import Blueprint, request, jsonify
 
 api = Blueprint('api', __name__)
 settings = json.load(open('data-settings.json', 'r'))
+
+shopbopSession = requests.Session()
+shopbopSession.headers.update({
+    'Accept': 'application/json',
+    'Client-Id': 'Shopbop-UW-Team2',
+    'Client-Version': '1.0.0'
+})
+
+db_url = 'http://localhost:8000'
+dynamodb = boto3.resource('dynamodb', endpoint_url=db_url)
+table = dynamodb.Table('Outfits')
+print(f'Connected to DynamoDB table: {table.name}')
 
 
 @api.route('/api/settings')
@@ -43,7 +59,7 @@ def get_api_products():
                 break
 
     # get the source data of the categories of this collection to retrieve the id
-    all_categories = requests.get(f'{settings["baseUrl"]}/public/folders').json()[settings['root']]
+    all_categories = shopbopSession.get(f'{settings["baseUrl"]}/public/folders').json()[settings['root']]
     select_categories = []
     for uri in uris:
         keys = uri.split('/')
@@ -61,12 +77,49 @@ def get_api_products():
                                    limit=limit,
                                    query=query) for c in select_categories]
 
-    products = [requests.get(url).json()['products'] for url in src_urls]
+    products = [shopbopSession.get(url).json()['products'] for url in src_urls]
     products = [p for sublist in products for p in sublist]
     for p in products:
         p['part'] = part
 
     return jsonify(products)
+
+
+@api.route('/api/outfit', methods=['POST'])
+def post_api_outfit():
+    data = json.loads(request.data)
+    data['themes'] = parse_themes(data['desc'])
+    data['comments'] = []
+    data['likes'] = 0
+    data['id'] = str(uuid.uuid4())
+    print(f'Posting outfit: {data}')
+    table.put_item(Item=data)
+    return '/'
+
+
+@api.route('/api/outfits')
+def get_api_outfits():
+    """
+    Fetch all outfits containing a particular...
+        - theme*
+        - product
+        - product collection*
+        - product part*
+        - price range
+        - keyword
+    Then sort result by...
+        - likes
+        - date
+        - price
+    :return: sorted list of queried outfits
+    """
+    theme = request.args.get('theme')
+    sort = request.args.get('sort', default='likes')  # likes | price | date
+    min_price = request.args.get('minPrice')
+    max_price = request.args.get('maxPrice')
+    limit = request.args.get('limit', default=40)
+    query = request.args.get('q')
+    return '/'
 
 
 def build_products_url(cat_id, **kwargs):
@@ -75,3 +128,7 @@ def build_products_url(cat_id, **kwargs):
     if len(params) > 0:
         url += '?' + '&'.join(params)
     return url
+
+
+def parse_themes(desc):
+    return re.findall(r'[#@][\w]+', desc)
