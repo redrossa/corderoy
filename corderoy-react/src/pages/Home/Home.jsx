@@ -1,13 +1,11 @@
 import React from 'react';
-import {Navbar} from "../components/Navbar";
+import Navigation from './Navigation';
 
 export default class Home extends React.Component {
   render() {
     return (
         <div className="Feed page">
-          <Navbar>
-            create outfit
-          </Navbar>
+          <Navigation />
           feed
         </div>
     );
