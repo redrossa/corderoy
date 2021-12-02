@@ -1,16 +1,25 @@
 import json
+import re
+import uuid
+
 import requests
 import boto3
 from flask import Blueprint, request, jsonify
 
 api = Blueprint('api', __name__)
 settings = json.load(open('data-settings.json', 'r'))
+
 shopbopSession = requests.Session()
 shopbopSession.headers.update({
     'Accept': 'application/json',
     'Client-Id': 'Shopbop-UW-Team2',
     'Client-Version': '1.0.0'
 })
+
+db_url = 'http://localhost:8000'
+dynamodb = boto3.resource('dynamodb', endpoint_url=db_url)
+table = dynamodb.Table('Outfits')
+print(f'Connected to DynamoDB table: {table.name}')
 
 
 @api.route('/api/settings')
@@ -79,7 +88,12 @@ def get_api_products():
 @api.route('/api/outfit', methods=['POST'])
 def post_api_outfit():
     data = json.loads(request.data)
-    print(data)
+    data['themes'] = parse_themes(data['desc'])
+    data['comments'] = []
+    data['likes'] = 0
+    data['id'] = str(uuid.uuid4())
+    print(f'Posting outfit: {data}')
+    table.put_item(Item=data)
     return '/'
 
 
@@ -89,3 +103,7 @@ def build_products_url(cat_id, **kwargs):
     if len(params) > 0:
         url += '?' + '&'.join(params)
     return url
+
+
+def parse_themes(desc):
+    return re.findall(r'[#@][\w]+', desc)

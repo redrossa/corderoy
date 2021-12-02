@@ -18,10 +18,21 @@ export default class Cart extends React.Component {
   }
 
   async handleSubmit(event, outfit) {
+    const localDate = new Date();
+    const dateFmt = [
+        String(localDate.getUTCFullYear()).padStart(4, '0'),
+        String(localDate.getUTCMonth() + 1).padStart(2, '0'),
+        String(localDate.getUTCDate()).padStart(2, '0')
+    ].join('-') + '@' + [
+        String(localDate.getUTCHours()).padStart(2, '0'),
+        String(localDate.getUTCMinutes()).padStart(2, '0'),
+        String(localDate.getUTCSeconds()).padStart(2, '0')
+    ].join(':')
+
     await axios.post('/api/outfit', {
       title: event.target.title.value,
       desc: event.target.desc.value,
-      date: new Date().toUTCString(),
+      date: dateFmt,
       products: outfit.items
     }).then(res => {
       console.log(res.data);
