@@ -1,9 +1,16 @@
 import json
 import requests
+import boto3
 from flask import Blueprint, request, jsonify
 
 api = Blueprint('api', __name__)
 settings = json.load(open('data-settings.json', 'r'))
+shopbopSession = requests.Session()
+shopbopSession.headers.update({
+    'Accept': 'application/json',
+    'Client-Id': 'Shopbop-UW-Team2',
+    'Client-Version': '1.0.0'
+})
 
 
 @api.route('/api/settings')
@@ -43,7 +50,7 @@ def get_api_products():
                 break
 
     # get the source data of the categories of this collection to retrieve the id
-    all_categories = requests.get(f'{settings["baseUrl"]}/public/folders').json()[settings['root']]
+    all_categories = shopbopSession.get(f'{settings["baseUrl"]}/public/folders').json()[settings['root']]
     select_categories = []
     for uri in uris:
         keys = uri.split('/')
@@ -61,12 +68,19 @@ def get_api_products():
                                    limit=limit,
                                    query=query) for c in select_categories]
 
-    products = [requests.get(url).json()['products'] for url in src_urls]
+    products = [shopbopSession.get(url).json()['products'] for url in src_urls]
     products = [p for sublist in products for p in sublist]
     for p in products:
         p['part'] = part
 
     return jsonify(products)
+
+
+@api.route('/api/outfit', methods=['POST'])
+def post_api_outfit():
+    data = json.loads(request.data)
+    print(data)
+    return '/'
 
 
 def build_products_url(cat_id, **kwargs):
