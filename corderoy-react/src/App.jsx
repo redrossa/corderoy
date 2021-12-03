@@ -5,6 +5,8 @@ import Home from './pages/Home/Home';
 import {Wardrobe, Catalog} from './pages/Wardrobe';
 import {Share} from './pages/Share';
 import useOutfit from './hooks/useOutfit';
+import Trending from "./pages/Home/Trending";
+import Feed from "./pages/Home/Feed";
 
 function App() {
   const outfit = useOutfit();
@@ -13,11 +15,14 @@ function App() {
         <UserSelection.Provider value={outfit}>
           <BrowserRouter>
             <Routes>
-              <Route path="/" exact element={<Home/>}/>
-              <Route path="/wardrobe" element={<Wardrobe/>}>
-                <Route path=":collection" element={<Catalog/>}/>
+              <Route path="/" exact element={<Home/>}>
+                <Route path="" element={<Trending />} />
+                <Route path="/search" element={<Feed />} />
               </Route>
-              <Route path="/share" element={<Share/>}/>
+              <Route path="/wardrobe" element={<Wardrobe/>}>
+                <Route path=":collection" element={<Catalog/>} />
+              </Route>
+              <Route path="/share" element={<Share/>} />
             </Routes>
           </BrowserRouter>
         </UserSelection.Provider>
