@@ -1,10 +1,13 @@
 import json
 import re
 import uuid
-
 import requests
-import boto3
 from flask import Blueprint, request, jsonify
+from app import db
+from models import Outfit, Theme, Part, Collection , Designer
+
+
+
 
 api = Blueprint('api', __name__)
 settings = json.load(open('data-settings.json', 'r'))
@@ -16,10 +19,7 @@ shopbopSession.headers.update({
     'Client-Version': '1.0.0'
 })
 
-db_url = 'http://localhost:8000'
-dynamodb = boto3.resource('dynamodb', endpoint_url=db_url)
-table = dynamodb.Table('Outfits')
-print(f'Connected to DynamoDB table: {table.name}')
+
 
 
 @api.route('/api/settings')
@@ -93,7 +93,14 @@ def post_api_outfit():
     data['likes'] = 0
     data['id'] = str(uuid.uuid4())
     print(f'Posting outfit: {data}')
-    table.put_item(Item=data)
+    db.session.add(Outfit(id=data['id'], title=data['title'], desc=data['desc'], likes=data['likes'], 
+                    price=data['price'], date=data['date'], name=data['name'],
+                    products=data['products'], comments=data['comments']))
+    db.session.add(Theme(name=data['theme'], outfitid=data['id']))
+    db.session.add(Part(name=data['theme'], outfitid=data['id']))
+    db.session.add(Collection(name=data['theme'], outfitid=data['id']))
+    db.session.add(Designer(name=data['theme'], outfitid=data['id']))
+    
     return '/'
 
 
@@ -119,7 +126,30 @@ def get_api_outfits():
     max_price = request.args.get('maxPrice')
     limit = request.args.get('limit', default=40)
     query = request.args.get('q')
-    return '/'
+
+    q = db.session.query(Outfit, Theme, Part, Collection, Designer)
+                  .filter(Outfit.id == Theme.outfitid,
+                          Outfit.id == Part.outfitid, 
+                          Outfit.id == Collection.outfitid, 
+                          Outfit.id == Designer.outfitid)
+                  .filter(Outfit.price >= min_price, Outfit.price <= max_price)
+                  .filter(Theme.name == theme)
+                  .order_by(text(sort))
+    
+    outfits_list = []
+    for o, _, _ , _, _ in q:
+        outfits_list.append(o)
+
+    return outfits_list[:int(limit)]
+
+
+
+
+
+    
+
+    
+    
 
 
 def build_products_url(cat_id, **kwargs):
