@@ -11,7 +11,7 @@ export default class Wardrobe extends React.Component {
           <Navigation />
           <div className="content">
             <div className="cart-wrapper">
-              <Preview className="cart" />
+              <Preview className="cart" maxHeight="70vh" />
             </div>
             <Outlet />
           </div>
