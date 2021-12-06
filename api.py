@@ -6,6 +6,7 @@ import requests
 import boto3
 from flask import Blueprint, request, jsonify
 
+
 api = Blueprint('api', __name__)
 settings = json.load(open('data-settings.json', 'r'))
 
@@ -20,6 +21,8 @@ db_url = 'http://localhost:8000'
 dynamodb = boto3.resource('dynamodb', endpoint_url=db_url)
 table = dynamodb.Table('Outfits')
 print(f'Connected to DynamoDB table: {table.name}')
+
+mock_db = json.load(open('mock-db.json', 'r'))
 
 
 @api.route('/api/settings')
@@ -92,9 +95,12 @@ def post_api_outfit():
     data['comments'] = []
     data['likes'] = 0
     data['id'] = str(uuid.uuid4())
+    data['price'] = sum([prod['product']['retailPrice']['usdPrice']
+                         for prods in data['products'].values()
+                         for prod in prods.values()])
     print(f'Posting outfit: {data}')
     table.put_item(Item=data)
-    return '/'
+    return '/'  # return to home
 
 
 @api.route('/api/outfits')
@@ -102,7 +108,7 @@ def get_api_outfits():
     """
     Fetch all outfits containing a particular...
         - theme*
-        - product
+        - product designer*
         - product collection*
         - product part*
         - price range
@@ -113,13 +119,23 @@ def get_api_outfits():
         - price
     :return: sorted list of queried outfits
     """
-    theme = request.args.get('theme')
-    sort = request.args.get('sort', default='likes')  # likes | price | date
-    min_price = request.args.get('minPrice')
-    max_price = request.args.get('maxPrice')
-    limit = request.args.get('limit', default=40)
     query = request.args.get('q')
-    return '/'
+    sort = request.args.get('sort', default='likes')  # likes | price | date
+    limit = request.args.get('limit', default=40)
+    return []
+
+
+@api.route('/api/trending')
+def get_api_trending():
+    """
+    Fetch most liked outfits within a fixed period of time
+    then sort result by...
+        - likes
+        - date
+        - price
+    :return: sorted list of queried outfits
+    """
+    return jsonify(mock_db['trending'])
 
 
 def build_products_url(cat_id, **kwargs):
