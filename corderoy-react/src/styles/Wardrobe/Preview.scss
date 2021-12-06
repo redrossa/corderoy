@@ -40,5 +40,14 @@
       padding: 1rem 2rem;
       border-radius: 0.6rem;
     }
+
+    &-disabled {
+      pointer-events: none;
+      user-select: none;
+
+      .proceed-btn {
+        filter: opacity(50%);
+      }
+    }
   }
 }

@@ -41,11 +41,9 @@ export default function Preview(props) {
                     ))}
                   </div>
                   <Link
-                      className="link"
+                      className={classNames('link', !outfit.size() && 'link-disabled')}
                       to={'/share'}
-                      style={{
-                        'pointer-events': (outfit.size() === 0 ? 'none' : 'auto')
-                      }}>
+                      >
                     <div className="proceed-btn">
                       Proceed to share
                     </div>
