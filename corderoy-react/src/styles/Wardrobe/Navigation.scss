@@ -1,0 +1,41 @@
+.Navigation .wardrobe-nav {
+  .wardrobe-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 0.6rem;
+
+    .wardrobe-menu-parts {
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+
+      .wardrobe-menu-part {
+        cursor: pointer;
+        user-select: none;
+
+        &:hover {
+          color: gray;
+        }
+
+        &-active {
+          box-shadow: inset 0 -1px #E22854;
+        }
+      }
+    }
+
+    .wardrobe-menu-collections {
+      min-width: 1px;
+      min-height: 1.5rem;
+
+      .wardrobe-menu-scroll a {
+        color: inherit;
+        text-decoration: none;
+
+        &:hover {
+          color: gray;
+        }
+      }
+    }
+  }
+}

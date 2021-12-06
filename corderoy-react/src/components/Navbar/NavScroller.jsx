@@ -22,16 +22,15 @@ export default class NavScroller extends React.Component {
     const scroll = menu.scrollLeft;
     const overflowLeft = scroll > 0;
     const overflowRight = scroll < menu.scrollWidth - menu.clientWidth;
-    this.leftScroller.current.style.visibility = overflowLeft ? "visible" : "hidden";
-    this.rightScroller.current.style.visibility = overflowRight ? "visible" : "hidden";
+    this.leftScroller.current.style.visibility = overflowLeft ? 'visible' : 'hidden';
+    this.rightScroller.current.style.visibility = overflowRight ? 'visible' : 'hidden';
   }
 
-  handleItemOnClick(event) {
+  handleItemClick(event) {
     event.target.scrollIntoView({behavior: 'smooth', inline: 'center'});
   }
 
   render() {
-    console.log(this.props.children)
     return (
         <div className={classNames('NavScroller', this.props.className)}>
           <div className="left-chevron chevron" ref={this.leftScroller}>
@@ -39,7 +38,7 @@ export default class NavScroller extends React.Component {
           </div>
           <div className="menu-items" onScroll={this.handleScroll} ref={this.menu}>
             {this.props.children.map(c => (
-                <div className="menu-item" onClick={this.handleItemOnClick}>
+                <div className="menu-item" onClick={this.handleItemClick}>
                   {c}
                 </div>
             ))}
