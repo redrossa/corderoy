@@ -8,7 +8,7 @@ import {Link} from 'react-router-dom';
 export default function Preview(props) {
   return (
       <div className={classNames('Preview', props.className)}>
-        <h1>Your outfit selection</h1>
+        <h2>Your outfit selection</h2>
         <UserSelection.Consumer>
           {outfit => (
                 <div>
