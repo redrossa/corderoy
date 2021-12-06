@@ -1,12 +1,36 @@
 .NavScroller {
+  display: flex;
+  flex-direction: row;
+
+  .menu-items {
     display: flex;
     flex-direction: row;
     gap: 1.5rem;
-    overflow-x: scroll;
+    overflow-x: auto;
     white-space: nowrap;
-    width: 60vw;
 
     &::-webkit-scrollbar {
-        display: none;
+      display: none;
     }
+  }
+
+  $chevron-padding: 24px;
+
+  .chevron {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .left-chevron {
+    padding-right: $chevron-padding;
+    transform: translateX(calc(100% - #{$chevron-padding}));
+    background: linear-gradient(to right, white 50%, transparent);
+  }
+
+  .right-chevron {
+    padding-left: $chevron-padding;
+    transform: translateX(calc(-100% + #{$chevron-padding}));
+    background: linear-gradient(to left, white 50%, transparent);
+  }
 }
