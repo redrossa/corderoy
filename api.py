@@ -84,6 +84,7 @@ def get_api_products():
     products = [p for sublist in products for p in sublist]
     for p in products:
         p['part'] = part
+        p['color'] = 0
 
     return jsonify(products)
 
