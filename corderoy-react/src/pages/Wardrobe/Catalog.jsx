@@ -34,7 +34,7 @@ export default function Catalog(props) {
                       />
                       <div className="card-annotation">
                         <CardTitle className="card-title">{p.product.shortDescription}</CardTitle>
-                        <CardBody className="card-body">
+                        <CardBody className="card-annotation-body">
                           <div className="desc">
                             {p.product.designerName}
                           </div>

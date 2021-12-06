@@ -1,4 +1,6 @@
 .Catalog {
+  width: 70vw;
+
   .title {
     text-align: center;
   }
@@ -25,7 +27,7 @@
           text-overflow: ellipsis;
         }
 
-        .card-body {
+        .card-annotation-body {
           display: flex;
           flex-direction: row;
           justify-content: space-between;
