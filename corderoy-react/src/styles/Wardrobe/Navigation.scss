@@ -2,7 +2,7 @@
   .wardrobe-menu {
     display: flex;
     flex-direction: column;
-    align-items: end;
+    align-items: flex-end;
     gap: 0.6rem;
 
     .wardrobe-menu-parts {
@@ -28,12 +28,16 @@
       min-width: 1px;
       min-height: 1.5rem;
 
-      .wardrobe-menu-scroll a {
-        color: inherit;
-        text-decoration: none;
+      .wardrobe-menu-scroll {
+        max-width: 40vw;
 
-        &:hover {
-          color: gray;
+        a {
+          color: inherit;
+          text-decoration: none;
+
+          &:hover {
+            color: gray;
+          }
         }
       }
     }

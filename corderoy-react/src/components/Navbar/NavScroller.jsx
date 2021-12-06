@@ -17,6 +17,12 @@ export default class NavScroller extends React.Component {
     this.handleScroll();
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const menu = this.menu.current;
+    menu.scrollLeft = 0;
+    this.handleScroll();
+  }
+
   handleScroll() {
     const menu = this.menu.current;
     const scroll = menu.scrollLeft;
@@ -27,7 +33,7 @@ export default class NavScroller extends React.Component {
   }
 
   handleItemClick(event) {
-    event.target.scrollIntoView({behavior: 'smooth', inline: 'center'});
+    event.target.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
   }
 
   render() {

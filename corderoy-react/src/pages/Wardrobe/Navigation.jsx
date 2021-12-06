@@ -16,7 +16,7 @@ export default class Navigation extends React.Component {
     this.partsMenu = [];
     this.state = {
       part: null,
-      scroll: null
+      collections: []
     };
   }
 
@@ -29,27 +29,23 @@ export default class Navigation extends React.Component {
       this.partsMenu[idx].classList.remove('wardrobe-menu-part-active');
       this.setState({
         part: null,
-        scroll: null
+        collections: []
       });
       return;
     }
 
     const ctx = this.context;
     const collections = Object.fromEntries(Object.entries(ctx).map(([p, c]) => [p, Object.keys(c)]));
-    const scroll = (
-        <NavScroller className="wardrobe-menu-scroll">
-          {collections[part].map(col => (
-              <Link to={`/wardrobe/${col}`}>
-                {col}
-              </Link>
-          ))}
-        </NavScroller>
-    );
+    const links = collections[part].map(c => (
+        <Link to={`/wardrobe/${c}`}>
+          {c}
+        </Link>
+    ));
 
     this.partsMenu[idx].classList.add('wardrobe-menu-part-active');
     this.setState({
       part: part,
-      scroll: scroll
+      collections: links
     });
   }
 
@@ -79,7 +75,9 @@ export default class Navigation extends React.Component {
                 ))}
               </div>
               <div className="wardrobe-menu-collections">
-                {this.state.scroll}
+                <NavScroller className="wardrobe-menu-scroll">
+                  {this.state.collections}
+                </NavScroller>
               </div>
             </NavGroup>
           </Navbar>
