@@ -10,7 +10,9 @@ export default class Wardrobe extends React.Component {
         <div className="Wardrobe page">
           <Navigation />
           <div className="content">
-            <Preview className="cart" />
+            <div className="cart-wrapper">
+              <Preview className="cart" />
+            </div>
             <Outlet />
           </div>
         </div>
