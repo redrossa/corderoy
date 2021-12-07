@@ -25,7 +25,7 @@ export default function Preview(props) {
                                       <div className="item">
                                         <Card className="item-card" onClick={() => outfit.remove(item)}>
                                           <CardImg
-                                              src={`https://m.media-amazon.com/images/G/01/Shopbop/p${item.product.colors[0].images[0].src}`}
+                                              src={`https://m.media-amazon.com/images/G/01/Shopbop/p${item.product.colors[item.color].images[0].src}`}
                                               alt={item.product.shortDescription}
                                           />
                                         </Card>

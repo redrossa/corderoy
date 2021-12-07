@@ -42,4 +42,88 @@
       }
     }
   }
+
+  .item-modal {
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+
+    &-carousel {
+      width: 20vw;
+    }
+
+    &-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .item-title {
+        margin: 0;
+      }
+
+      &-colors {
+        margin-top: 0.5rem;
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+      }
+
+      &-swatch {
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+
+        &-select {
+          border-color: #E22854;
+        }
+
+        &-wrapper {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 50%;
+          overflow: hidden;
+          width: 85%;
+          height: 85%;
+        }
+      }
+
+      &-bot {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      $btn-width: 12vw;
+      $btn-height: 6vh;
+
+      &-add-btn {
+        border: none;
+        min-width: $btn-width;
+        height: $btn-height;
+        background-color: #E22854;
+        border-radius: 0.6rem;
+        color: white;
+      }
+
+      &-store-link {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: $btn-width;
+        height: $btn-height;
+        background-color: lightgray;
+        border-radius: 0.6rem;
+        color: inherit;
+        text-decoration: none;
+      }
+    }
+  }
 }

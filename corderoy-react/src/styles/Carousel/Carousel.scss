@@ -1,0 +1,25 @@
+.Carousel {
+  overflow: hidden;
+  position: relative;
+
+  &-content {
+    display: flex;
+    flex-direction: row;
+
+    img {
+      max-width: 100%;
+    }
+  }
+
+  .left-chevron {
+    position: absolute;
+    top: 50%;
+    left: 0;
+  }
+
+  .right-chevron {
+    position: absolute;
+    top: 50%;
+    right: 0;
+  }
+}
