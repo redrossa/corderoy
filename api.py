@@ -5,6 +5,7 @@ import requests
 from flask import Blueprint, request, jsonify
 from app import db
 from models import Outfit, Theme, Part, Collection , Designer
+from sqlalchemy.sql import text
 
 
 
@@ -100,8 +101,9 @@ def post_api_outfit():
     db.session.add(Part(name=data['theme'], outfitid=data['id']))
     db.session.add(Collection(name=data['theme'], outfitid=data['id']))
     db.session.add(Designer(name=data['theme'], outfitid=data['id']))
+    db.session.commit()
     
-    return '/'
+    return f"Done!!"
 
 
 @api.route('/api/outfits')
@@ -127,19 +129,19 @@ def get_api_outfits():
     limit = request.args.get('limit', default=40)
     query = request.args.get('q')
 
-    q = db.session.query(Outfit, Theme, Part, Collection, Designer)
-                  .filter(Outfit.id == Theme.outfitid,
+    q = db.session.query(Outfit, Theme, Part, Collection, Designer).filter(Outfit.id == Theme.outfitid,
                           Outfit.id == Part.outfitid, 
                           Outfit.id == Collection.outfitid, 
-                          Outfit.id == Designer.outfitid)
-                  .filter(Outfit.price >= min_price, Outfit.price <= max_price)
-                  .filter(Theme.name == theme)
-                  .order_by(text(sort))
+                          Outfit.id == Designer.outfitid).filter(Outfit.price >= min_price, 
+                          Outfit.price <= max_price).filter(Theme.name == theme).order_by(text(sort))
     
+    counter = 0;
     outfits_list = []
     for o, _, _ , _, _ in q:
         outfits_list.append(o)
-
+        counter += 1
+        if counter >= int(limit):
+            break
     return outfits_list[:int(limit)]
 
 
