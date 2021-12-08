@@ -22,7 +22,7 @@ shopbopSession.headers.update({
 
 
 
-mock_db = json.load(open('mock-db.json', 'r'))
+
 
 
 @api.route('/api/settings')
@@ -84,6 +84,7 @@ def get_api_products():
     products = [p for sublist in products for p in sublist]
     for p in products:
         p['part'] = part
+        p['collection'] = collection
         p['color'] = 0
 
     return jsonify(products)
@@ -99,20 +100,37 @@ def post_api_outfit():
     data['price'] = sum([prod['product']['retailPrice']['usdPrice']
                          for prods in data['products'].values()
                          for prod in prods.values()])
+    data['parts'] = [prod['part']
+                         for prods in data['products'].values()
+                         for prod in prods.values()]
+    data['collections'] = [prod['collection']
+                         for prods in data['products'].values()
+                         for prod in prods.values()]
+    data['designers'] = [prod['product']['designerName']
+                         for prods in data['products'].values()
+                         for prod in prods.values()]
     print(f'Posting outfit: {data}')
     db.session.add(Outfit(id=data['id'], title=data['title'], desc=data['desc'], likes=data['likes'], 
-                    price=data['price'], date=data['date'], name=data['name'],
-                    products=data['products'], comments=data['comments']))
-    db.session.add(Theme(name=data['theme'], outfitid=data['id']))
-    db.session.add(Part(name=data['theme'], outfitid=data['id']))
-    db.session.add(Collection(name=data['theme'], outfitid=data['id']))
-    db.session.add(Designer(name=data['theme'], outfitid=data['id']))
+                    price=data['price'], date=data['date'], products=data['products'], 
+                    comments=data['comments']))
+    for part in list(set(data['parts'])):    
+        db.session.add(Part(name=part, outfitid=data['id']))
+
+    for collection in list(set(data['collections'])):    
+        db.session.add(Collection(name=collection, outfitid=data['id']))
+
+    for designer in list(set(data['designers'])):     
+        db.session.add(Designer(name=designer, outfitid=data['id']))
+    
+    for theme in list(set(data['themes'])):
+        db.session.add(Theme(name=theme, outfitid=data['id']))
+    
     db.session.commit()
     
     return '/'
 
 
-@api.route('/api/outfits')
+@api.route('/api/outfits', methods=['GET'])
 def get_api_outfits():
     """
     Fetch all outfits containing a particular...
@@ -128,9 +146,15 @@ def get_api_outfits():
         - price
     :return: sorted list of queried outfits
     """
-    query = request.args.get('q')
+    
+    print('inside get')
+    theme = request.args.get('theme')
     sort = request.args.get('sort', default='likes')  # likes | price | date
+    min_price = request.args.get('minPrice')
+    max_price = request.args.get('maxPrice')
     limit = request.args.get('limit', default=40)
+    query = request.args.get('q')
+
     q = db.session.query(Outfit, Theme, Part, Collection, Designer).filter(Outfit.id == Theme.outfitid,
                           Outfit.id == Part.outfitid, 
                           Outfit.id == Collection.outfitid, 
@@ -157,7 +181,7 @@ def get_api_trending():
         - price
     :return: sorted list of queried outfits
     """
-    return jsonify(mock_db['trending'])
+    return '/'
 
 
 def build_products_url(cat_id, **kwargs):

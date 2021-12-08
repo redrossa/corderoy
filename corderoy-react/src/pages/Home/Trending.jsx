@@ -15,6 +15,7 @@ export default class Trending extends React.Component {
   async componentDidMount() {
     await axios.get('/api/outfits?q=trending')
         .then(res => {
+          console.log('get got called')
           const posts = res.data;
           this.setState({posts: posts});
         });
