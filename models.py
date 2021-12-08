@@ -3,17 +3,17 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from flask_migrate import Migrate
 from sqlalchemy.dialects.postgresql import JSONB
-from app import db
+from flask_sqlalchemy import SQLAlchemy
 
 
 
 # define your models classes hereafter
 
 
-
+db = SQLAlchemy()
 
 class Outfit(db.Model):
-    __tablename__ = 'outfits'
+    __tablename__ = 'outfit'
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
@@ -42,9 +42,9 @@ class Outfit(db.Model):
 
 
 class Theme(db.Model):
-    __tablename__ = 'themes'
+    __tablename__ = 'theme'
     name = db.Column(db.String, primary_key=True)
-    outfitid = db.Column(db.Integer, db.ForeignKey('Outfit.id'), primary_key=True)
+    outfitid = db.Column(db.Integer, db.ForeignKey('outfit.id'), primary_key=True)
 
     def __init__(self, name, outfitid):
         self.name =name
@@ -54,9 +54,9 @@ class Theme(db.Model):
         return f"<Theme {self.name}>"
 
 class Part(db.Model):
-    __tablename__ = 'parts'
+    __tablename__ = 'part'
     name = db.Column(db.String, primary_key=True)
-    outfitid = db.Column(db.Integer, db.ForeignKey('Outfit.id'), primary_key=True)
+    outfitid = db.Column(db.Integer, db.ForeignKey('outfit.id'), primary_key=True)
 
     def __init__(self, name, outfitid):
         self.name =name
@@ -67,9 +67,9 @@ class Part(db.Model):
 
 
 class Collection(db.Model):
-    __tablename__ = 'collections'
+    __tablename__ = 'collection'
     name = db.Column(db.String, primary_key=True)
-    outfitid = db.Column(db.Integer, db.ForeignKey('Outfit.id'), primary_key=True)
+    outfitid = db.Column(db.Integer, db.ForeignKey('outfit.id'), primary_key=True)
 
 
     def __init__(self, name, outfitid):
@@ -80,9 +80,9 @@ class Collection(db.Model):
         return f"<Collection {self.name}>"
 
 class Designer(db.Model):
-    __tablename__ = 'designers'
+    __tablename__ = 'designer'
     name = db.Column(db.String, primary_key=True)
-    outfitid = db.Column(db.Integer, db.ForeignKey('Outfit.id'), primary_key=True)
+    outfitid = db.Column(db.Integer, db.ForeignKey('outfit.id'), primary_key=True)
 
     def __init__(self, name, outfitid):
         self.name = name

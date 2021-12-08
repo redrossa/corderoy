@@ -3,8 +3,7 @@ import re
 import uuid
 import requests
 from flask import Blueprint, request, jsonify
-from app import db
-from models import Outfit, Theme, Part, Collection , Designer
+from models import Outfit, Theme, Part, Collection, Designer, db
 from sqlalchemy.sql import text
 
 
