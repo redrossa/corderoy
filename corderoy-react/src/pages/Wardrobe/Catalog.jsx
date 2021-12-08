@@ -13,6 +13,7 @@ export default function Catalog(props) {
   const [products, setProducts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalProduct, setModalProduct] = useState({});
+  const [counter, setCounter] = useState(0);
   const modal = useRef();
 
   useEffect(() => {
@@ -23,6 +24,7 @@ export default function Catalog(props) {
   }, [collection]);
 
   const openModal = (product) => {
+    setCounter(counter + 1);
     setModalProduct(product);
     setShowModal(true);
   };
@@ -60,7 +62,7 @@ export default function Catalog(props) {
                   <Modal className="item-detail-modal" ref={modal} show={showModal} setShow={setShowModal}>
                     <div className="item-modal">
                       <div className="item-modal-images">
-                        <Carousel className="item-modal-carousel">
+                        <Carousel className="item-modal-carousel" key={counter}>
                           {modalProduct.product.colors[modalProduct.color].images.map(im => (
                               <img
                                   src={`https://m.media-amazon.com/images/G/01/Shopbop/p${im.src}`}
