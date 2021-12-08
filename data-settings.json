@@ -126,5 +126,12 @@
                 "Jewelry & Accessories/Winter Accessories"
             ]
         }
-    }
+    },
+    "collectionRank": [
+        "Upper",
+        "Lower",
+        "Shoes",
+        "Bags",
+        "Accessories"
+    ]
 }
