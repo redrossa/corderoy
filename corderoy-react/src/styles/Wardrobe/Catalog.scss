@@ -5,6 +5,12 @@
     text-align: center;
   }
 
+  .filter {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
   .cards {
     display: flex;
     flex-direction: row;

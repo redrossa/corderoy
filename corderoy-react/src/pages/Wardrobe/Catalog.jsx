@@ -36,6 +36,9 @@ export default function Catalog(props) {
               <div className="title">
                 <h1>{collection}</h1>
               </div>
+              <div className="filter">
+
+              </div>
               <div className="cards">
                 {products.map(prod => (
                     <Card className="card" onClick={() => openModal(prod)}>
@@ -85,6 +88,7 @@ export default function Catalog(props) {
                                         onClick={() => {
                                           const modalProd = {...modalProduct};
                                           modalProd.color = idx;
+                                          setCounter(counter + 1);
                                           setModalProduct(modalProd);
                                         }}
                                     >
