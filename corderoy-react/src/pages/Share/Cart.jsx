@@ -34,6 +34,7 @@ export default class Cart extends React.Component {
       title: event.target.title.value,
       desc: event.target.desc.value,
       date: dateFmt,
+      price: outfit.totalPrice(),
       products: outfit.items
     }).then(res => {
       console.log(res.data);
