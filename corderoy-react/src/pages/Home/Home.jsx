@@ -8,6 +8,7 @@ export default class Home extends React.Component {
     return (
         <div className="Feed Page">
           <Navigation />
+          <Outlet />
         </div>
     );
   }

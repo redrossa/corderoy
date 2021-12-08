@@ -105,7 +105,7 @@ export default function Catalog(props) {
                         </div>
                         <div className="item-modal-info-bot">
                           <button
-                              className="item-modal-info-add-btn"
+                              className={classNames('item-modal-info-add-btn', outfit.contains(modalProduct) && 'item-modal-info-add-btn-disabled')}
                               onClick={() => outfit.add(modalProduct)}
                           >
                             Add to outfit

@@ -117,6 +117,15 @@
         background-color: #E22854;
         border-radius: 0.6rem;
         color: white;
+        font-size: inherit;
+        cursor: pointer;
+
+        &-disabled {
+          pointer-events: none;
+          cursor: none;
+          user-select: none;
+          filter: opacity(50%);
+        }
       }
 
       &-store-link {

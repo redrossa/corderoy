@@ -1,11 +1,12 @@
 .Wardrobe .content {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 1rem;
   padding: 0 5vw 10vh;
 
   .cart {
-    min-width: 12vw;
+    min-width: 14vw;
     position: sticky;
     top: 6rem;
   }

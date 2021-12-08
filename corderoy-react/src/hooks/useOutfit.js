@@ -65,10 +65,16 @@ export default function useOutfit() {
         .reduce((a, b) => a + b, 0);
   };
 
+  const contains = item => {
+    const {part, product} = item;
+    return product.productCode in items[part];
+  };
+
   return {
     items,
     add,
     remove,
-    size
+    size,
+    contains
   }
 }
