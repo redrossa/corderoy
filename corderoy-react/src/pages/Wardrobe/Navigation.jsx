@@ -20,13 +20,13 @@ export default class Navigation extends React.Component {
     };
   }
 
-  handleClick(part, idx) {
+  handleMenuPartClick(part, idx) {
     for (const menu of this.partsMenu) {
-      menu.classList.remove('wardrobe-menu-part-active');
+      menu.classList.remove('wardrobe-menu-part-select');
     }
 
     if (part === this.state.part) {
-      this.partsMenu[idx].classList.remove('wardrobe-menu-part-active');
+      this.partsMenu[idx].classList.remove('wardrobe-menu-part-select');
       this.setState({
         part: null,
         collections: []
@@ -42,7 +42,7 @@ export default class Navigation extends React.Component {
         </Link>
     ));
 
-    this.partsMenu[idx].classList.add('wardrobe-menu-part-active');
+    this.partsMenu[idx].classList.add('wardrobe-menu-part-select');
     this.setState({
       part: part,
       collections: links
@@ -66,7 +66,7 @@ export default class Navigation extends React.Component {
                 {Object.keys(collections).map((part, idx) => (
                     <div
                         className="wardrobe-menu-part"
-                        onClick={() => this.handleClick(part, idx)}
+                        onClick={() => this.handleMenuPartClick(part, idx)}
                         key={idx}
                         ref={e => this.partsMenu[idx] = e}
                     >

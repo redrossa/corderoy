@@ -1,15 +1,17 @@
 .Cart .container {
+  $container-height: 75vh;
+
   display: flex;
   flex-direction: row;
   justify-content: center;
-  //gap: 2rem;
-  max-height: 75vh;
+  gap: 2rem;
+  max-height: $container-height;
 
   .items-preview {
     display: flex;
     flex-direction: column;
     max-height: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
 
     .items-container {
       display: flex;
@@ -50,9 +52,9 @@
   }
 
   .share-bar {
-    height: 100%;
+    height: $container-height;
     background-color: lightgray;
-    border-radius: 0 2rem 2rem 0;
+    border-radius: 1rem;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -106,6 +108,14 @@
         font-size: inherit;
         background-color: #E22854;
         border: none;
+        cursor: pointer;
+
+        &[disabled] {
+          cursor: none;
+          pointer-events: none;
+          user-select: none;
+          filter: opacity(50%);
+        }
       }
     }
   }

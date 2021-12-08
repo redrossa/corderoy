@@ -1,5 +1,5 @@
 import '../../styles/Share/Cart.scss'
-import React, {useState} from 'react';
+import React, {createRef, useState} from 'react';
 import classNames from 'classnames';
 import {UserSelection} from '../../components/UserSelection';
 import {Card, CardImg} from '../../components/Card';
@@ -13,7 +13,8 @@ export default class Cart extends React.Component {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.state = {
-      redirect: null
+      redirect: null,
+      titleInput: ''
     }
   }
 
@@ -33,11 +34,14 @@ export default class Cart extends React.Component {
       title: event.target.title.value,
       desc: event.target.desc.value,
       date: dateFmt,
-      products: outfit.items, 
+      price: outfit.totalPrice(),
+      products: outfit.items
     }).then(res => {
       console.log(res.data);
       this.setState({redirect: res.data});
     });
+
+    outfit.clear();
   }
 
   render() {
@@ -52,7 +56,7 @@ export default class Cart extends React.Component {
         <div className={classNames('Cart', this.props.className)}>
           <div className="container">
             <div className="items-preview">
-              {Object.entries(outfit.items).map(([part, partItems]) => (
+              {Object.entries(outfit.items).filter(([part, partItems]) => Object.keys(partItems).length).map(([part, partItems]) => (
                   <div className="items-part">
                     <h3>{part}</h3>
                     <div className="items-container">
@@ -82,16 +86,24 @@ export default class Cart extends React.Component {
             <form action="javascript:void(0);" method="post" id="share-form" onSubmit={event => this.handleSubmit(event, outfit)}>
               <div className="share-bar">
                 <div className="top">
-                  <input type="text" name="title" placeholder="Title" />
+                  <input type="text" name="title" placeholder="Title" onInput={e => this.setState({titleInput: e.target.value})} />
                   <hr />
                   <textarea name="desc" placeholder="Description" />
                 </div>
                 <div className="bottom">
                   <hr />
                   <div className="total">
-                    TOTAL: {}
+                    TOTAL: {new Intl.NumberFormat('en-US', {
+                      style: 'currency',
+                      currency: 'USD'
+                    }).format(outfit.totalPrice())}
                   </div>
-                  <button type="submit" form="share-form" value="Share">
+                  <button
+                      disabled={!outfit.size() || !this.state.titleInput}
+                      type="submit"
+                      form="share-form"
+                      value="Share"
+                  >
                     Share
                   </button>
                 </div>
