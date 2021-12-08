@@ -1,35 +1,15 @@
 import '../../styles/Home/Feed.scss';
-import classNames from 'classnames';
-import React, {useEffect, useState} from 'react';
-import {UserSelection} from '../../components/UserSelection';
-import {Card, CardImg} from '../../components/Card';
-import {Link} from 'react-router-dom';
-import axios
-
-
+import React from "react";
+import classNames from "classnames";
+import {useLocation} from "react-router-dom";
 
 export default function Feed(props) {
+  const location = useLocation();
+  console.log(location);
 
-    
-    const [posts, setPosts] = useState([]);
-    useEffect(() => {
-        getPosts();
-    });
+  return (
+      <div className={classNames('Feed', props.className)}>
 
-    const getPosts = () => {
-
-        
-
-    } 
-
-
-    return(
-
-        <div classNames=Feed>
-            {getPosts()}
-        </div>
-    )
-
+      </div>
+  );
 }
-
-export default Feed

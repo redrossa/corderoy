@@ -1,5 +1,6 @@
 import React from 'react';
 import Navigation from './Navigation';
+import {Outlet} from "react-router-dom";
 
 
 export default class Home extends React.Component {
@@ -7,7 +8,7 @@ export default class Home extends React.Component {
     return (
         <div className="Feed Page">
           <Navigation />
-          <Feed />
+          <Outlet />
         </div>
     );
   }
