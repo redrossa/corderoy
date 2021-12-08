@@ -70,11 +70,31 @@ export default function useOutfit() {
     return product.productCode in items[part];
   };
 
+  const clear = () => {
+    setItems({
+      "Upper": {},
+      "Lower": {},
+      "Shoes": {},
+      "Bags": {},
+      "Accessories": {}
+    });
+  };
+
+  const totalPrice = () => {
+    return Object.values(items)
+        .map(coll => Object.values(coll))
+        .flat()
+        .map(item => item.product.retailPrice.usdPrice)
+        .reduce((a, b) => a + b, 0);
+  }
+
   return {
     items,
     add,
     remove,
     size,
-    contains
+    contains,
+    clear,
+    totalPrice
   }
 }
