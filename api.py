@@ -9,6 +9,7 @@ from sqlalchemy.sql import text
 
 
 
+
 api = Blueprint('api', __name__)
 settings = json.load(open('data-settings.json', 'r'))
 
@@ -20,6 +21,8 @@ shopbopSession.headers.update({
 })
 
 
+
+mock_db = json.load(open('mock-db.json', 'r'))
 
 
 @api.route('/api/settings')
@@ -81,6 +84,7 @@ def get_api_products():
     products = [p for sublist in products for p in sublist]
     for p in products:
         p['part'] = part
+        p['color'] = 0
 
     return jsonify(products)
 
@@ -92,6 +96,9 @@ def post_api_outfit():
     data['comments'] = []
     data['likes'] = 0
     data['id'] = str(uuid.uuid4())
+    data['price'] = sum([prod['product']['retailPrice']['usdPrice']
+                         for prods in data['products'].values()
+                         for prod in prods.values()])
     print(f'Posting outfit: {data}')
     db.session.add(Outfit(id=data['id'], title=data['title'], desc=data['desc'], likes=data['likes'], 
                     price=data['price'], date=data['date'], name=data['name'],
@@ -102,7 +109,7 @@ def post_api_outfit():
     db.session.add(Designer(name=data['theme'], outfitid=data['id']))
     db.session.commit()
     
-    return f"Done!!"
+    return '/'
 
 
 @api.route('/api/outfits')
@@ -110,7 +117,7 @@ def get_api_outfits():
     """
     Fetch all outfits containing a particular...
         - theme*
-        - product
+        - product designer*
         - product collection*
         - product part*
         - price range
@@ -121,13 +128,9 @@ def get_api_outfits():
         - price
     :return: sorted list of queried outfits
     """
-    theme = request.args.get('theme')
-    sort = request.args.get('sort', default='likes')  # likes | price | date
-    min_price = request.args.get('minPrice')
-    max_price = request.args.get('maxPrice')
-    limit = request.args.get('limit', default=40)
     query = request.args.get('q')
-
+    sort = request.args.get('sort', default='likes')  # likes | price | date
+    limit = request.args.get('limit', default=40)
     q = db.session.query(Outfit, Theme, Part, Collection, Designer).filter(Outfit.id == Theme.outfitid,
                           Outfit.id == Part.outfitid, 
                           Outfit.id == Collection.outfitid, 
@@ -142,15 +145,19 @@ def get_api_outfits():
         if counter >= int(limit):
             break
     return outfits_list[:int(limit)]
+  
 
-
-
-
-
-    
-
-    
-    
+@api.route('/api/trending')
+def get_api_trending():
+    """
+    Fetch most liked outfits within a fixed period of time
+    then sort result by...
+        - likes
+        - date
+        - price
+    :return: sorted list of queried outfits
+    """
+    return jsonify(mock_db['trending'])
 
 
 def build_products_url(cat_id, **kwargs):
