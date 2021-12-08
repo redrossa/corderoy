@@ -1,10 +1,14 @@
 import json
 import re
 import uuid
-
 import requests
-import boto3
 from flask import Blueprint, request, jsonify
+from app import db
+from models import Outfit, Theme, Part, Collection , Designer
+from sqlalchemy.sql import text
+
+
+
 
 
 api = Blueprint('api', __name__)
@@ -17,10 +21,7 @@ shopbopSession.headers.update({
     'Client-Version': '1.0.0'
 })
 
-db_url = 'http://localhost:8000'
-dynamodb = boto3.resource('dynamodb', endpoint_url=db_url)
-table = dynamodb.Table('Outfits')
-print(f'Connected to DynamoDB table: {table.name}')
+
 
 mock_db = json.load(open('mock-db.json', 'r'))
 
@@ -100,8 +101,16 @@ def post_api_outfit():
                          for prods in data['products'].values()
                          for prod in prods.values()])
     print(f'Posting outfit: {data}')
-    table.put_item(Item=data)
-    return '/'  # return to home
+    db.session.add(Outfit(id=data['id'], title=data['title'], desc=data['desc'], likes=data['likes'], 
+                    price=data['price'], date=data['date'], name=data['name'],
+                    products=data['products'], comments=data['comments']))
+    db.session.add(Theme(name=data['theme'], outfitid=data['id']))
+    db.session.add(Part(name=data['theme'], outfitid=data['id']))
+    db.session.add(Collection(name=data['theme'], outfitid=data['id']))
+    db.session.add(Designer(name=data['theme'], outfitid=data['id']))
+    db.session.commit()
+    
+    return '/'
 
 
 @api.route('/api/outfits')
@@ -123,8 +132,21 @@ def get_api_outfits():
     query = request.args.get('q')
     sort = request.args.get('sort', default='likes')  # likes | price | date
     limit = request.args.get('limit', default=40)
-    return []
-
+    q = db.session.query(Outfit, Theme, Part, Collection, Designer).filter(Outfit.id == Theme.outfitid,
+                          Outfit.id == Part.outfitid, 
+                          Outfit.id == Collection.outfitid, 
+                          Outfit.id == Designer.outfitid).filter(Outfit.price >= min_price, 
+                          Outfit.price <= max_price).filter(Theme.name == theme).order_by(text(sort))
+    
+    counter = 0;
+    outfits_list = []
+    for o, _, _ , _, _ in q:
+        outfits_list.append(o)
+        counter += 1
+        if counter >= int(limit):
+            break
+    return outfits_list[:int(limit)]
+  
 
 @api.route('/api/trending')
 def get_api_trending():
