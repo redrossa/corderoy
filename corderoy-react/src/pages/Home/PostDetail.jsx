@@ -16,7 +16,7 @@ export default class PostDetail extends React.Component {
 
   formatDescription(srcDesc) {
     return (
-        <ReactHashtag renderHashtag={tag => <Link to="/">{tag}</Link>}>
+        <ReactHashtag renderHashtag={tag => <Link to={`/posts?q=${encodeURIComponent(tag)}`}>{tag}</Link>}>
           {srcDesc}
         </ReactHashtag>
     );
