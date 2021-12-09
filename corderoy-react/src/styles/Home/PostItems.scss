@@ -1,0 +1,35 @@
+.PostItems {
+  display: flex;
+  flex-direction: column;
+
+  &-carousel {
+    width: 20vw;
+  }
+
+  &-item {
+    &-detail-bot {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    &-name {
+      font-weight: bold;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    &-store-link {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 6vh;
+      background-color: lightgray;
+      border-radius: 0.6rem;
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+}

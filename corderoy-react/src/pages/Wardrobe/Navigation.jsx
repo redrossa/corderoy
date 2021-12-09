@@ -35,7 +35,7 @@ export default class Navigation extends React.Component {
     }
 
     const ctx = this.context;
-    const collections = Object.fromEntries(Object.entries(ctx).map(([p, c]) => [p, Object.keys(c)]));
+    const collections = Object.fromEntries(Object.entries(ctx.tree).map(([p, c]) => [p, Object.keys(c)]));
     const links = collections[part].map(c => (
         <Link to={`/wardrobe/${c}`}>
           {c}
@@ -51,9 +51,10 @@ export default class Navigation extends React.Component {
 
   render() {
     const ctx = this.context;
-    const collections = Object.fromEntries(Object.entries(ctx).map(([p, c]) => [p, Object.keys(c)]));
-    if (!collections)
-      return;
+    if (!ctx.tree)
+      return null;
+
+    const collections = Object.fromEntries(Object.entries(ctx.tree).map(([p, c]) => [p, Object.keys(c)]));
 
     return (
         <div className={classNames('Navigation', this.props.className)}>

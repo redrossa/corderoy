@@ -1,28 +1,18 @@
 .Feed {
-  display: flex;
-  flex-direction: column;
+  .feed-nav .menu a {
+    text-decoration: none;
+    color: inherit;
 
-  .landing {
-    text-align: center;
-
-    h1 {
-      font-size: 3rem;
-      margin-top: 14vh;
+    &:hover {
+      box-shadow: inset 0 -1px #E22854;
     }
 
-    input[name=searchbar] {
-      width: 50vw;
-      font-size: inherit;
-      line-height: 3rem;
-      padding: 0 1rem;
-      border-radius: 1rem;
-      border: none;
-      outline: none;
-      background: lightgray;
+    &:active {
+      color: gray;
     }
   }
 
-  .catalog {
-    
+  .search-title {
+    text-align: center;
   }
 }

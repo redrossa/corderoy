@@ -24,7 +24,7 @@ export default class Cart extends React.Component {
         String(localDate.getUTCFullYear()).padStart(4, '0'),
         String(localDate.getUTCMonth() + 1).padStart(2, '0'),
         String(localDate.getUTCDate()).padStart(2, '0')
-    ].join('-') + '@' + [
+    ].join('-') + 'T' + [
         String(localDate.getUTCHours()).padStart(2, '0'),
         String(localDate.getUTCMinutes()).padStart(2, '0'),
         String(localDate.getUTCSeconds()).padStart(2, '0')
