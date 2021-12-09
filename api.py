@@ -164,6 +164,15 @@ def post_api_like():
     return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
 
 
+@api.route('/api/unlike', methods=['POST'])
+def post_api_unlike():
+    outfit_id = request.args.get('outfit-id')
+
+    # TODO increment likes of input outfit
+
+    return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
+
+
 def load_settings():
     settings = json.load(open('data-settings.json', 'r'))
     return settings
