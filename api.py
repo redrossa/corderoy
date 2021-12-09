@@ -1,3 +1,4 @@
+import http
 import json
 import re
 import uuid
@@ -158,6 +159,15 @@ def get_api_trending():
     :return: sorted list of queried outfits
     """
     return jsonify(mock_db['trending'])
+
+
+@api.route('/api/like', methods=['POST'])
+def post_api_like():
+    outfit_id = request.args.get('outfit-id')
+
+    # TODO increment likes of input outfit
+
+    return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
 
 
 def build_products_url(cat_id, **kwargs):
