@@ -17,14 +17,20 @@ export default class Carousel extends React.Component {
 
   slideLeft() {
     const curr = this.state.currentSlide;
-    if (curr > 0)
-      this.setState({currentSlide: curr - 1});
+    if (curr > 0) {
+      const index = curr - 1;
+      this.setState({currentSlide: index});
+      this.props.updateIndex(index);
+    }
   }
 
   slideRight() {
     const curr = this.state.currentSlide;
-    if (curr < this.props.children.length - 1)
-      this.setState({currentSlide: curr + 1});
+    if (curr < this.props.children.length - 1) {
+      const index = curr + 1;
+      this.setState({currentSlide: index});
+      this.props.updateIndex(index);
+    }
   }
 
   render() {
