@@ -148,7 +148,7 @@ def get_api_outfits():
     :return: sorted list of queried outfits
     """
     
-    theme = request.args.get('theme', default="", type=str)
+    theme = request.args.get('theme', default='', type=str)
     sort = request.args.get('sort', default='likes', type=str)  # likes | price | date
     min_price = request.args.get('minPrice', default=0, type=float)
     max_price = request.args.get('maxPrice', default=sys.float_info.max, type=float)
@@ -166,11 +166,8 @@ def get_api_outfits():
     outfit_list = []
     outfit = {'id': None, 'theme': [], 'productid': []}
     for o, t, p in q.order_by(Outfit.id, Theme.name, Product.productid, text(sort)):
-        print(outfit['id'], outfit['theme'], outfit['productid'])
         if o.id != outfit['id']: 
-            print('inside new outfitid')
             outfit_list.append(outfit.copy())
-            print('new outfit appended', [outfit['id'] for outfit in outfit_list])
             outfit['id'] = o.id
             outfit['title'] = o.title
             outfit['likes'] = o.likes
@@ -185,16 +182,15 @@ def get_api_outfits():
             outfit['designer'] = [p.designer]
             outfit['collection'] = [p.collection]
         if t.name not in outfit['theme'] and t.name != '':
-            print('inside new theme')
             outfit['theme'] += [t.name]
         if p.productid not in outfit['productid']:
-            print('inside new productid')
             outfit['productid'] += [p.productid]
             outfit['part'] += [p.part]
             outfit['designer'] += [p.designer]
             outfit['collection'] += [p.collection]
     outfit_list.append(outfit.copy())
-    print([outfit['id'] for outfit in outfit_list])
+    print([outfit['likes'] for outfit in outfit_list[1:]])
+
     return jsonify(outfit_list[1:limit+1])
     
 
@@ -219,11 +215,10 @@ def get_api_trending():
     
     for o, t, p in q.order_by(text('likes'), text('date'), text('price'), 
                             Outfit.id, Theme.name, Product.productid):
-        print(outfit['id'], outfit['theme'], outfit['productid'])
+        
         if o.id != outfit['id']: 
-            print('inside new outfitid')
+            
             outfit_list.append(outfit.copy())
-            print('new outfit appended', [outfit['id'] for outfit in outfit_list])
             outfit['id'] = o.id
             outfit['title'] = o.title
             outfit['likes'] = o.likes
@@ -238,16 +233,15 @@ def get_api_trending():
             outfit['designer'] = [p.designer]
             outfit['collection'] = [p.collection]
         if t.name not in outfit['theme'] and t.name != '':
-            print('inside new theme')
             outfit['theme'] += [t.name]
         if p.productid not in outfit['productid']:
-            print('inside new productid')
             outfit['productid'] += [p.productid]
             outfit['part'] += [p.part]
             outfit['designer'] += [p.designer]
             outfit['collection'] += [p.collection]
     outfit_list.append(outfit.copy())
-    print([outfit['id'] for outfit in outfit_list])
+    print([outfit['likes'] for outfit in outfit_list[1:]])
+
     return jsonify(outfit_list[1:])
     
     
@@ -260,7 +254,10 @@ def post_api_like():
     outfit_id = request.args.get('outfit-id')
 
     print(f'like {outfit_id}')
-    # TODO increment likes of input outfit
+   
+    q = db.session.query(Outfit).filter(Outfit.id == outfit_id).one()
+    q.likes += 1
+    db.session.commit()
 
     return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
 
@@ -270,7 +267,9 @@ def post_api_unlike():
     outfit_id = request.args.get('outfit-id')
 
     print(f'unlike {outfit_id}')
-    # TODO increment likes of input outfit
+    q = db.session.query(Outfit).filter(Outfit.id == outfit_id).one()
+    q.likes = max(q.likes - 1, 0)
+    db.session.commit()
 
     return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
 
@@ -309,7 +308,15 @@ def parse_query(query):
         'designers': []
     }
 
-    # TODO parse query
+    settings = load_settings()
+    selectors['theme'] += list(set(re.findall(r'[#@][\w]+', query)))
+    all_parts = list(settings['tree'].keys())
+    all_collections = [collection for part in settings['tree'].values() for collection in part.keys()]
+    all_designers = []
+
+    if query: 
+        re.findall(r"(?=("+'|'.join(selectors[collections])+r"))", query)
+  
 
     return selectors
 
