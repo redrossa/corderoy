@@ -16,6 +16,10 @@ function App() {
     collectionRank: Settings.collectionRank
   };
 
+  const localLikedPosts = localStorage.getItem('likedPosts');
+  if (!localLikedPosts)
+    localStorage.setItem('likedPosts', JSON.stringify([]))
+
   return (
       <div className="App">
         <Collections.Provider value={collections}>

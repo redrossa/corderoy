@@ -152,13 +152,14 @@ def get_api_trending():
 
     # TODO fetch trending
 
-    return []
+    return jsonify(mock_db['trending'])
 
 
 @api.route('/api/like', methods=['POST'])
 def post_api_like():
     outfit_id = request.args.get('outfit-id')
 
+    print(f'like {outfit_id}')
     # TODO increment likes of input outfit
 
     return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
@@ -168,6 +169,7 @@ def post_api_like():
 def post_api_unlike():
     outfit_id = request.args.get('outfit-id')
 
+    print(f'unlike {outfit_id}')
     # TODO increment likes of input outfit
 
     return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
