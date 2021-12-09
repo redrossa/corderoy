@@ -198,7 +198,7 @@ def get_api_outfits():
     return jsonify(outfit_list[1:limit+1])
     
 
-@api.route('/api/trending')
+@api.route('/api/trending', methods = ['GET'])
 def get_api_trending():
     """
     Fetch most liked outfits within an input time period
@@ -211,7 +211,52 @@ def get_api_trending():
 
     # TODO fetch trending
 
-    return []
+
+
+   
+   
+    q = db.session.query(Outfit, Theme, Product).filter(Outfit.id == Theme.outfitid,
+                          Outfit.id == Product.outfitid)
+    
+    outfit_list = []
+    outfit = {'id': None, 'theme': [], 'productid': []}
+    
+    for o, t, p in q.order_by(text('likes'), text('date'), text('price'), 
+                            Outfit.id, Theme.name, Product.productid):
+        print(outfit['id'], outfit['theme'], outfit['productid'])
+        if o.id != outfit['id']: 
+            print('inside new outfitid')
+            outfit_list.append(outfit.copy())
+            print('new outfit appended', [outfit['id'] for outfit in outfit_list])
+            outfit['id'] = o.id
+            outfit['title'] = o.title
+            outfit['likes'] = o.likes
+            outfit['desc'] = o.desc
+            outfit['price'] = o.price
+            outfit['date'] = o.date
+            outfit['products'] = [o.products]
+            outfit['comments'] = [o.comments]
+            outfit['theme'] = [t.name]
+            outfit['productid'] = [p.productid]
+            outfit['part'] = [p.part]
+            outfit['designer'] = [p.designer]
+            outfit['collection'] = [p.collection]
+        if t.name not in outfit['theme'] and t.name != '':
+            print('inside new theme')
+            outfit['theme'] += [t.name]
+        if p.productid not in outfit['productid']:
+            print('inside new productid')
+            outfit['productid'] += [p.productid]
+            outfit['part'] += [p.part]
+            outfit['designer'] += [p.designer]
+            outfit['collection'] += [p.collection]
+    outfit_list.append(outfit.copy())
+    print([outfit['id'] for outfit in outfit_list])
+    return jsonify(outfit_list[1:])
+    
+    
+    
+
 
 
 @api.route('/api/like', methods=['POST'])
