@@ -1,13 +1,12 @@
 import React from 'react';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import {UserSelection} from './components/UserSelection';
-import Home from './pages/Home/Home';
+import {Feed, Home} from './pages/Home';
 import {Wardrobe, Catalog} from './pages/Wardrobe';
 import {Share} from './pages/Share';
 import useOutfit from './hooks/useOutfit';
 import {Collections} from './components/Collections';
 import Settings from './data-settings.json';
-import Feed from './pages/Home/Feed';
 
 function App() {
   const outfit = useOutfit();
