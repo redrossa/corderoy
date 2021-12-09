@@ -211,10 +211,6 @@ def get_api_trending():
 
     # TODO fetch trending
 
-
-
-   
-   
     q = db.session.query(Outfit, Theme, Product).filter(Outfit.id == Theme.outfitid,
                           Outfit.id == Product.outfitid)
     
