@@ -2,8 +2,9 @@ from sqlalchemy import create_engine, Column, Integer
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from flask_migrate import Migrate
-from sqlalchemy.dialects.postgresql import JSON, JSONB
+from sqlalchemy.dialects.postgresql import JSON
 from flask_sqlalchemy import SQLAlchemy
+
 
 
 
@@ -24,11 +25,8 @@ class Outfit(db.Model):
     products = db.Column(JSON)
     comments = db.Column(JSON)
     theme_children = relationship("Theme", back_populates="parent")
-    part_children = relationship("Part", back_populates="parent")
-    collection_children = relationship("Collection", back_populates="parent")
-    desginer_children = relationship("Designer", back_populates="parent")
-
-
+    product_children = relationship("Product", back_populates="parent")
+    
 
     def __init__(self, id, title, desc, likes, date, price, products, comments):
         self.id = id
@@ -58,43 +56,25 @@ class Theme(db.Model):
     def __repr__(self):
         return f"<Theme {self.name}>"
 
-class Part(db.Model):
-    __tablename__ = 'part'
-    name = db.Column(db.String, primary_key=True)
+class Product(db.Model):
+    __tablename__ = 'product'
+    part = db.Column(db.String)
+    collection = db.Column(db.String)
+    designer = db.Column(db.String)
     outfitid = db.Column(db.String, db.ForeignKey('outfit.id'), primary_key=True)
-    parent = relationship("Outfit", back_populates="part_children")
+    productid = db.Column(db.String, primary_key=True)
+    parent = relationship("Outfit", back_populates="product_children")
 
-    def __init__(self, name, outfitid):
-        self.name =name
+    def __init__(self, part, designer, collection, outfitid, productid):
+        self.part = part 
+        self.designer = designer
+        self.collection = collection
         self.outfitid = outfitid
+        self.productid = productid
     
     def __repr__(self):
-        return f"<Part {self.name}>"
+        return f"<Product {self.name}>"
 
 
-class Collection(db.Model):
-    __tablename__ = 'collection'
-    name = db.Column(db.String, primary_key=True)
-    outfitid = db.Column(db.String, db.ForeignKey('outfit.id'), primary_key=True)
-    parent = relationship("Outfit", back_populates="collection_children")
 
 
-    def __init__(self, name, outfitid):
-        self.name = name
-        self.outfitid = outfitid
-    
-    def __repr__(self):
-        return f"<Collection {self.name}>"
-
-class Designer(db.Model):
-    __tablename__ = 'designer'
-    name = db.Column(db.String, primary_key=True)
-    outfitid = db.Column(db.String, db.ForeignKey('outfit.id'), primary_key=True)
-    parent = relationship("Outfit", back_populates="desginer_children")
-
-    def __init__(self, name, outfitid):
-        self.name = name
-        self.outfitid = outfitid
-    
-    def __repr__(self):
-        return f"<Designer {self.name}>"

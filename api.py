@@ -3,8 +3,10 @@ import re
 import uuid
 import requests
 from flask import Blueprint, request, jsonify
-from models import Outfit, Theme, Part, Collection, Designer, db
+from models import Outfit, Theme, Product, db
 from sqlalchemy.sql import text
+import sys
+
 
 
 
@@ -100,28 +102,21 @@ def post_api_outfit():
     data['price'] = sum([prod['product']['retailPrice']['usdPrice']
                          for prods in data['products'].values()
                          for prod in prods.values()])
-    data['parts'] = [prod['part']
+   
+    data['product_info'] = [(prod['product']['productCode'], prod['part'], prod['collection'], prod['product']['designerName'])
                          for prods in data['products'].values()
                          for prod in prods.values()]
-    data['collections'] = [prod['collection']
-                         for prods in data['products'].values()
-                         for prod in prods.values()]
-    data['designers'] = [prod['product']['designerName']
-                         for prods in data['products'].values()
-                         for prod in prods.values()]
-    print(f'Posting outfit: {data}')
+   
+    #print(f'Posting outfit: {data}')
     db.session.add(Outfit(id=data['id'], title=data['title'], desc=data['desc'], likes=data['likes'], 
                     price=data['price'], date=data['date'], products=data['products'], 
                     comments=data['comments']))
-    for part in list(set(data['parts'])):    
-        db.session.add(Part(name=part, outfitid=data['id']))
-
-    for collection in list(set(data['collections'])):    
-        db.session.add(Collection(name=collection, outfitid=data['id']))
-
-    for designer in list(set(data['designers'])):     
-        db.session.add(Designer(name=designer, outfitid=data['id']))
     
+    
+    for productid, part, collection, designer in data['product_info']:    
+        db.session.add(Product(part=part, productid=productid, 
+        collection=collection, designer=designer, outfitid=data['id']))
+
     for theme in list(set(data['themes'])):
         db.session.add(Theme(name=theme, outfitid=data['id']))
     
@@ -147,28 +142,53 @@ def get_api_outfits():
     :return: sorted list of queried outfits
     """
     
-    print('inside get')
-    theme = request.args.get('theme')
-    sort = request.args.get('sort', default='likes')  # likes | price | date
-    min_price = request.args.get('minPrice')
-    max_price = request.args.get('maxPrice')
-    limit = request.args.get('limit', default=40)
+    theme = request.args.get('theme', default="", type=str)
+    sort = request.args.get('sort', default='likes', type=str)  # likes | price | date
+    min_price = request.args.get('minPrice', default=0, type=float)
+    max_price = request.args.get('maxPrice', default=sys.float_info.max, type=float)
+    limit = request.args.get('limit', default=40, type=int)
     query = request.args.get('q')
 
-    q = db.session.query(Outfit, Theme, Part, Collection, Designer).filter(Outfit.id == Theme.outfitid,
-                          Outfit.id == Part.outfitid, 
-                          Outfit.id == Collection.outfitid, 
-                          Outfit.id == Designer.outfitid).filter(Outfit.price >= min_price, 
-                          Outfit.price <= max_price).filter(Theme.name == theme).order_by(text(sort))
+    q = db.session.query(Outfit, Theme, Product).filter(Outfit.id == Theme.outfitid,
+                          Outfit.id == Product.outfitid).filter(Outfit.price >= min_price, 
+                          Outfit.price <= max_price)
     
-    counter = 0;
-    outfits_list = []
-    for o, _, _ , _, _ in q:
-        outfits_list.append(o)
-        counter += 1
-        if counter >= int(limit):
-            break
-    return outfits_list[:int(limit)]
+    if theme != '':
+        q = q.filter(Theme.name == theme)
+
+    outfit_list = []
+    outfit = {'id': None, 'theme': [], 'productid': []}
+    for o, t, p in q.order_by(Outfit.id, Theme.name, Product.productid, text(sort)):
+        print(outfit['id'], outfit['theme'], outfit['productid'])
+        if o.id != outfit['id']: 
+            print('inside new outfitid')
+            outfit_list.append(outfit.copy())
+            print('new outfit appended', [outfit['id'] for outfit in outfit_list])
+            outfit['id'] = o.id
+            outfit['title'] = o.title
+            outfit['likes'] = o.likes
+            outfit['desc'] = o.desc
+            outfit['price'] = o.price
+            outfit['date'] = o.date
+            outfit['products'] = [o.products]
+            outfit['comments'] = [o.comments]
+            outfit['theme'] = [t.name]
+            outfit['productid'] = [p.productid]
+            outfit['part'] = [p.part]
+            outfit['designer'] = [p.designer]
+            outfit['collection'] = [p.collection]
+        if t.name not in outfit['theme'] and t.name != '':
+            print('inside new theme')
+            outfit['theme'] += [t.name]
+        if p.productid not in outfit['productid']:
+            print('inside new productid')
+            outfit['productid'] += [p.productid]
+            outfit['part'] += [p.part]
+            outfit['designer'] += [p.designer]
+            outfit['collection'] += [p.collection]
+    outfit_list.append(outfit.copy())
+    print([outfit['id'] for outfit in outfit_list])
+    return jsonify(outfit_list[1:limit+1])
   
 
 @api.route('/api/trending')
@@ -193,4 +213,4 @@ def build_products_url(cat_id, **kwargs):
 
 
 def parse_themes(desc):
-    return re.findall(r'[#@][\w]+', desc)
+    return list(set(re.findall(r'[#@][\w]+', desc)))
