@@ -5,14 +5,9 @@ import uuid
 import requests
 from flask import Blueprint, request, jsonify
 from models import Outfit, Theme, Part, Collection, Designer, db
-from sqlalchemy.sql import text
-
-
-
 
 
 api = Blueprint('api', __name__)
-settings = json.load(open('data-settings.json', 'r'))
 
 shopbopSession = requests.Session()
 shopbopSession.headers.update({
@@ -21,23 +16,24 @@ shopbopSession.headers.update({
     'Client-Version': '1.0.0'
 })
 
-
-
 mock_db = json.load(open('mock-db.json', 'r'))
 
 
 @api.route('/api/settings')
 def get_api_settings():
+    settings = load_settings()
     return jsonify(settings)
 
 
 @api.route('/api/parts')
 def get_api_parts():
+    settings = load_settings()
     return jsonify([k for k in settings['tree'].keys()])
 
 
 @api.route('/api/collections')
 def get_api_collections():
+    settings = load_settings()
     part = request.args.get('part')
     parts = [part] if part else settings['tree'].keys()
     return jsonify([k for p in parts for k in settings['tree'][p].keys()])
@@ -51,6 +47,8 @@ def get_api_products():
     max_price = request.args.get('maxPrice')
     limit = request.args.get('limit', default=40)
     query = request.args.get('q')
+
+    settings = load_settings()
 
     # get the part and uris of the input collection from settings
     part = None
@@ -85,6 +83,7 @@ def get_api_products():
     products = [p for sublist in products for p in sublist]
     for p in products:
         p['part'] = part
+        p['collection'] = collection
         p['color'] = 0
 
     return jsonify(products)
@@ -127,38 +126,33 @@ def get_api_outfits():
         - likes
         - date
         - price
+        
     :return: sorted list of queried outfits
     """
     query = request.args.get('q')
     sort = request.args.get('sort', default='likes')  # likes | price | date
     limit = request.args.get('limit', default=40)
-    q = db.session.query(Outfit, Theme, Part, Collection, Designer).filter(Outfit.id == Theme.outfitid,
-                          Outfit.id == Part.outfitid, 
-                          Outfit.id == Collection.outfitid, 
-                          Outfit.id == Designer.outfitid).filter(Outfit.price >= min_price, 
-                          Outfit.price <= max_price).filter(Theme.name == theme).order_by(text(sort))
-    
-    counter = 0;
-    outfits_list = []
-    for o, _, _ , _, _ in q:
-        outfits_list.append(o)
-        counter += 1
-        if counter >= int(limit):
-            break
-    return outfits_list[:int(limit)]
+
+    selectors = parse_query(query)
+    # TODO implement fetch outfits
+
+    return []
   
 
 @api.route('/api/trending')
 def get_api_trending():
     """
-    Fetch most liked outfits within a fixed period of time
-    then sort result by...
-        - likes
-        - date
-        - price
+    Fetch most liked outfits within an input time period
+    then sort result by likes
+    
     :return: sorted list of queried outfits
     """
-    return jsonify(mock_db['trending'])
+    days = request.args.get('days')
+    limit = request.args.get('limit', default=40)
+
+    # TODO fetch trending
+
+    return []
 
 
 @api.route('/api/like', methods=['POST'])
@@ -170,12 +164,43 @@ def post_api_like():
     return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
 
 
+def load_settings():
+    settings = json.load(open('data-settings.json', 'r'))
+    return settings
+
+
 def build_products_url(cat_id, **kwargs):
+    settings = load_settings()
     url = f'{settings["baseUrl"]}/public/categories/{cat_id}/products'
     params = [f'{k}={v}' for k, v in kwargs.items() if v]
     if len(params) > 0:
         url += '?' + '&'.join(params)
     return url
+
+
+def parse_query(query):
+    """
+    Extract from a string query a list of themes, product parts, 
+    product collections, and product designers
+    
+    :param query: a string text without any particular format,
+        except for '#' to specify the start of a theme
+    :return: an dictionary with the following key-value pairs:
+        'theme': [list of themes ..]
+        'parts': [list of product parts ...]
+        'collections': [list of product collections ...]
+        'designers': [list of product designers ...]
+    """
+    selectors = {
+        'theme': [],
+        'parts': [],
+        'collections': [],
+        'designers': []
+    }
+
+    # TODO parse query
+
+    return selectors
 
 
 def parse_themes(desc):
