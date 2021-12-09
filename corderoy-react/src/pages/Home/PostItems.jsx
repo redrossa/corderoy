@@ -18,11 +18,18 @@ export default class PostItems extends React.Component {
 
   componentDidMount() {
     const collections = this.context;
+    console.log(collections);
+    console.log('items', this.props.items);
+    
     const orderedItems = collections.collectionRank
-          .map(coll => this.props.items[coll])
+          .map(coll => this.props.items[0][coll])
           .filter(collProds => Object.keys(collProds).length)
           .map(collProds => Object.values(collProds))
-          .flat();
+          .flat()
+    
+    console.log('orderedItems', orderedItems);  
+        
+
 
     this.setState({
       orderedItems: orderedItems,
