@@ -10,8 +10,6 @@ db.init_app(app)
 migrate = Migrate(app, db)
 app.register_blueprint(api)
 
- 
-
 
 @app.route('/')
 def get_home():

@@ -14,7 +14,6 @@ import sys
 
 
 api = Blueprint('api', __name__)
-settings = json.load(open('data-settings.json', 'r'))
 
 shopbopSession = requests.Session()
 shopbopSession.headers.update({
@@ -30,16 +29,19 @@ shopbopSession.headers.update({
 
 @api.route('/api/settings')
 def get_api_settings():
+    settings = load_settings()
     return jsonify(settings)
 
 
 @api.route('/api/parts')
 def get_api_parts():
+    settings = load_settings()
     return jsonify([k for k in settings['tree'].keys()])
 
 
 @api.route('/api/collections')
 def get_api_collections():
+    settings = load_settings()
     part = request.args.get('part')
     parts = [part] if part else settings['tree'].keys()
     return jsonify([k for p in parts for k in settings['tree'][p].keys()])
@@ -53,6 +55,8 @@ def get_api_products():
     max_price = request.args.get('maxPrice')
     limit = request.args.get('limit', default=40)
     query = request.args.get('q')
+
+    settings = load_settings()
 
     # get the part and uris of the input collection from settings
     part = None
@@ -140,6 +144,7 @@ def get_api_outfits():
         - likes
         - date
         - price
+        
     :return: sorted list of queried outfits
     """
     
@@ -149,6 +154,7 @@ def get_api_outfits():
     max_price = request.args.get('maxPrice', default=sys.float_info.max, type=float)
     limit = request.args.get('limit', default=40, type=int)
     query = request.args.get('q')
+    selectors = parse_query(query)
 
     q = db.session.query(Outfit, Theme, Product).filter(Outfit.id == Theme.outfitid,
                           Outfit.id == Product.outfitid).filter(Outfit.price >= min_price, 
@@ -190,19 +196,22 @@ def get_api_outfits():
     outfit_list.append(outfit.copy())
     print([outfit['id'] for outfit in outfit_list])
     return jsonify(outfit_list[1:limit+1])
-  
+    
 
 @api.route('/api/trending')
 def get_api_trending():
     """
-    Fetch most liked outfits within a fixed period of time
-    then sort result by...
-        - likes
-        - date
-        - price
+    Fetch most liked outfits within an input time period
+    then sort result by likes
+    
     :return: sorted list of queried outfits
     """
-    return '/'
+    days = request.args.get('days')
+    limit = request.args.get('limit', default=40)
+
+    # TODO fetch trending
+
+    return []
 
 
 @api.route('/api/like', methods=['POST'])
@@ -214,12 +223,43 @@ def post_api_like():
     return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
 
 
+def load_settings():
+    settings = json.load(open('data-settings.json', 'r'))
+    return settings
+
+
 def build_products_url(cat_id, **kwargs):
+    settings = load_settings()
     url = f'{settings["baseUrl"]}/public/categories/{cat_id}/products'
     params = [f'{k}={v}' for k, v in kwargs.items() if v]
     if len(params) > 0:
         url += '?' + '&'.join(params)
     return url
+
+
+def parse_query(query):
+    """
+    Extract from a string query a list of themes, product parts, 
+    product collections, and product designers
+    
+    :param query: a string text without any particular format,
+        except for '#' to specify the start of a theme
+    :return: an dictionary with the following key-value pairs:
+        'themes': [list of themes ..]
+        'parts': [list of product parts ...]
+        'collections': [list of product collections ...]
+        'designers': [list of product designers ...]
+    """
+    selectors = {
+        'themes': [],
+        'parts': [],
+        'collections': [],
+        'designers': []
+    }
+
+    # TODO parse query
+
+    return selectors
 
 
 def parse_themes(desc):
