@@ -186,7 +186,7 @@ def parse_query(query):
     :param query: a string text without any particular format,
         except for '#' to specify the start of a theme
     :return: an dictionary with the following key-value pairs:
-        'theme': [list of themes ..]
+        'themes': [list of themes ..]
         'parts': [list of product parts ...]
         'collections': [list of product collections ...]
         'designers': [list of product designers ...]
