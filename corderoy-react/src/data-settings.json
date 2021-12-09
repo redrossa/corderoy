@@ -1,0 +1,137 @@
+{
+    "baseUrl": "https://api.shopbop.com",
+    "root": "categories",
+    "tree": {
+        "Upper": {
+            "Coats": [
+                "Clothing/Coats"
+            ],
+            "Dresses": [
+                "Clothing/Dresses"
+            ],
+            "Jackets": [
+                "Clothing/Jackets"
+            ],
+            "Jumpsuits & Rompers": [
+                "Clothing/Jumpsuits & Rompers"
+            ],
+            "Sweaters & Knits": [
+                "Clothing/Sweaters & Knits"
+            ],
+            "Swimsuits & Cover-Ups": [
+                "Clothing/Swimsuits & Cover-Ups"
+            ],
+            "Crop Tops": [
+                "Clothing/Tops/Active",
+                "Clothing/Tops/Crop Tops",
+                "Clothing/Tops/Tank Tops"
+            ],
+            "Bodysuits": [
+                "Clothing/Tops/Bodysuits",
+                "Clothing/Tops/Turtle & Mock Necks"
+            ],
+            "Blouses": [
+                "Clothing/Tops/Blouses",
+                "Clothing/Tops/Button Down Shirts"
+            ],
+            "Night Out": [
+                "Clothing/Tops/Night Out"
+            ],
+            "Sweatshirts & Hoodies": [
+                "Clothing/Tops/Sweatshirts & Hoodies"
+            ],
+            "Tees": [
+                "Clothing/Tops/Graphic Tees",
+                "Clothing/Tops/Short Sleeve Tees",
+                "Clothing/Tops/Long Sleeve Tees"
+            ]
+        },
+        "Lower": {
+            "Jeans": [
+                "Clothing/Jeans"
+            ],
+            "Pants": [
+                "Clothing/Pants"
+            ],
+            "Shorts": [
+                "Clothing/Shorts"
+            ],
+            "Skirts": [
+                "Clothing/Skirts"
+            ]
+        },
+        "Shoes": {
+            "Boots": [
+                "Shoes/Boots"
+            ],
+            "Espadrilles": [
+                "Shoes/Espadrilles"
+            ],
+            "Pumps": [
+                "Shoes/Pumps"
+            ],
+            "Sandals": [
+                "Shoes/Sandals"
+            ],
+            "Sneakers & Athletic": [
+                "Shoes/Sneakers & Athletic"
+            ]
+        },
+        "Bags": {
+            "Backpacks": [
+                "Bags/Backpacks"
+            ],
+            "Satchels & Top Handles": [
+                "Bags/Bucket Bags",
+                "Bags/Satchels & Top Handles",
+                "Bags/Cross Body Bags",
+                "Bags/Totes"
+            ],
+            "Belt Bags": [
+                "Bags/Belt Bags"
+            ],
+            "Mini Bags": [
+                "Bags/Clutches",
+                "Bags/Mini Bags",
+                "Bags/Shoulder Bags"
+            ],
+            "Beach & Straw Bags": [
+                "Bags/Beach & Straw Bags"
+            ],
+            "Luggage & Weekenders": [
+                "Bags/Luggage & Weekenders"
+            ]
+        },
+        "Accessories": {
+            "Jewelry": [
+                "Jewelry & Accessories/Jewelry/Bracelets",
+                "Jewelry & Accessories/Jewelry/Earrings",
+                "Jewelry & Accessories/Jewelry/Necklaces",
+                "Jewelry & Accessories/Jewelry/Rings"
+            ],
+            "Watches": [
+                "Jewelry & Accessories/Watches"
+            ],
+            "Hair Accessories": [
+                "Jewelry & Accessories/Hair Accessories"
+            ],
+            "Hats": [
+                "Jewelry & Accessories/Hats"
+            ],
+            "Sunglasses & Eyewear": [
+                "Jewelry & Accessories/Sunglasses & Eyewear"
+            ],
+            "Winter Accessories": [
+                "Jewelry & Accessories/Scarves & Wraps",
+                "Jewelry & Accessories/Winter Accessories"
+            ]
+        }
+    },
+    "collectionRank": [
+        "Upper",
+        "Lower",
+        "Shoes",
+        "Bags",
+        "Accessories"
+    ]
+}
