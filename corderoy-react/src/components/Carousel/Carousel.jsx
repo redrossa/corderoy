@@ -5,6 +5,10 @@ import LeftChevronIcon from '../../images/chevron_left_24px_outlined.svg';
 import RightChevronIcon from '../../images/chevron_right_24px_outlined.svg';
 
 export default class Carousel extends React.Component {
+  static defaultProps = {
+    updateIndex: () => {}
+  }
+
   constructor(props) {
     super(props);
     this.content = createRef();
