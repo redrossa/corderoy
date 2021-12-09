@@ -315,7 +315,7 @@ def parse_query(query):
     all_designers = []
 
     if query: 
-        re.findall(r"(?=("+'|'.join(selectors[collections])+r"))", query)
+        re.findall(r"(?=("+'|'.join(selectors['collections'])+r"))", query)
   
 
     return selectors
