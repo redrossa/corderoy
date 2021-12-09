@@ -18,6 +18,10 @@ export default class Cart extends React.Component {
     }
   }
 
+  parseThemes(desc) {
+    return [...desc.matchAll('#[\\w]+')].map(groups => groups[0]);
+  }
+
   async handleSubmit(event, outfit) {
     const localDate = new Date();
     const dateFmt = [
@@ -30,16 +34,25 @@ export default class Cart extends React.Component {
         String(localDate.getUTCSeconds()).padStart(2, '0')
     ].join(':')
 
-    await axios.post('/api/outfit', {
+    const post = {
       title: event.target.title.value,
       desc: event.target.desc.value,
       date: dateFmt,
       price: outfit.totalPrice(),
-      products: outfit.items
-    }).then(res => {
-      console.log(res.data);
-      this.setState({redirect: res.data});
-    });
+      products: outfit.items,
+      likes: 0,
+      comments: [],
+      themes: this.parseThemes(event.target.desc.value),
+      parts: outfit.parts(),
+      collections: outfit.collections(),
+      designers: outfit.designers()
+    };
+
+    await axios.post('/api/outfit', post)
+        .then(res => {
+          console.log(res.data);
+          this.setState({redirect: res.data});
+        });
 
     outfit.clear();
   }

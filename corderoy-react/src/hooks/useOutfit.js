@@ -86,7 +86,27 @@ export default function useOutfit() {
         .flat()
         .map(item => item.product.retailPrice.usdPrice)
         .reduce((a, b) => a + b, 0);
-  }
+  };
+
+  const parts = () => {
+    return Object.entries(items)
+        .filter(([part, collections]) => Object.keys(collections).length)
+        .map(([part, collections]) => part);
+  };
+
+  const collections = () => {
+    return [...new Set(Object.values(items)
+                             .map(colls => Object.values(colls))
+                             .flat()
+                             .map(prod => prod.collection))];
+  };
+
+  const designers = () => {
+    return [...new Set(Object.values(items)
+                             .map(colls => Object.values(colls))
+                             .flat()
+                             .map(prod => prod.product.designerName))];
+  };
 
   return {
     items,
@@ -95,6 +115,9 @@ export default function useOutfit() {
     size,
     contains,
     clear,
-    totalPrice
+    totalPrice,
+    parts,
+    collections,
+    designers
   }
 }
