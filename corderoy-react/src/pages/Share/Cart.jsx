@@ -50,7 +50,6 @@ export default class Cart extends React.Component {
 
     await axios.post('/api/outfit', post)
         .then(res => {
-          console.log(res.data);
           this.setState({redirect: res.data});
         });
 
