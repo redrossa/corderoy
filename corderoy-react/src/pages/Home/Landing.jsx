@@ -13,18 +13,18 @@ export default function Landing(props) {
 
   const handleScroll = (event) => {
     setScroll(event.target.scrollingElement.scrollTop)
-  }
+  };
 
   const handleSubmit = (event) => {
     navigate(`/posts?q=${event.target.searchbar.value}`);
-  }
+  };
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [])
+  }, []);
 
   return (
       <div className={classNames('Landing', props.className)}>

@@ -15,4 +15,49 @@
   .search-title {
     text-align: center;
   }
+
+  .filter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    form {
+      display: flex;
+    }
+
+    select {
+      outline: none;
+      border-radius: 0.5rem 0 0 0.5rem;
+    }
+
+    input[name=searchbar] {
+      width: 30vw;
+      height: 4vh;
+      min-width: 200px;
+      border: none;
+      outline: none;
+      background-color: lightgray;
+      font-size: inherit;
+      padding: 0 1rem;
+    }
+
+    button {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      width: 4vh;
+      height: 4vh;
+      border-radius: 0 0.5rem 0.5rem 0;
+      background-color: #E22854;
+      cursor: pointer;
+
+      &:hover {
+        filter: brightness(95%);
+      }
+
+      &:active {
+        filter: opacity(75%);
+      }
+    }
+  }
 }

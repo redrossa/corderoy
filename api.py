@@ -133,10 +133,13 @@ def get_api_outfits():
     sort = request.args.get('sort', default='likes')  # likes | price | date
     limit = request.args.get('limit', default=40)
 
+    print(query)
+    print(sort)
+
     selectors = parse_query(query)
     # TODO implement fetch outfits
 
-    return []
+    return jsonify(mock_db['trending'])
   
 
 @api.route('/api/trending')
