@@ -192,7 +192,7 @@ def parse_query(query):
         'designers': [list of product designers ...]
     """
     selectors = {
-        'theme': [],
+        'themes': [],
         'parts': [],
         'collections': [],
         'designers': []
