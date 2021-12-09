@@ -45,7 +45,31 @@
         margin: 0 0 -4px;
         width: $line-height;
         height: $line-height;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
+    }
+  }
+
+  .like-btn-liked {
+    animation: like 0.5s;
+  }
+
+  @keyframes like {
+    from {
+      width: 100%;
+      height: 100%;
+    }
+
+    50% {
+      width: 125%;
+      height: 125%;
+    }
+
+    to {
+      width: 100%;
+      height: 100%;
     }
   }
 }

@@ -36,7 +36,9 @@ export default class PostDetail extends React.Component {
   }
 
   handleLike(event) {
-    console.log(event.currentTarget);
+    const icon = event.currentTarget.children[0];
+    icon.classList.toggle('like-btn-liked');
+    icon.src = icon.classList.contains('like-btn-liked') ? FilledLikeIcon : BorderedLikeIcon;
   }
 
   render() {
