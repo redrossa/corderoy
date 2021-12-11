@@ -1,10 +1,8 @@
 import http
 import json
-import re
 import uuid
 import requests
 from flask import Blueprint, request, jsonify
-from models import Outfit, Theme, Part, Collection, Designer, db
 
 
 api = Blueprint('api', __name__)
@@ -16,7 +14,13 @@ shopbopSession.headers.update({
     'Client-Version': '1.0.0'
 })
 
-mock_db = json.load(open('mock-db.json', 'r'))
+
+def load_settings():
+    return json.load(open('data-settings.json', 'r'))
+
+
+def load_mock_db():
+    return json.load(open('mock-db.json', 'r'))
 
 
 @api.route('/api/settings')
@@ -37,6 +41,15 @@ def get_api_collections():
     part = request.args.get('part')
     parts = [part] if part else settings['tree'].keys()
     return jsonify([k for p in parts for k in settings['tree'][p].keys()])
+
+
+def build_products_url(cat_id, **kwargs):
+    settings = load_settings()
+    url = f'{settings["baseUrl"]}/public/categories/{cat_id}/products'
+    params = [f'{k}={v}' for k, v in kwargs.items() if v]
+    if len(params) > 0:
+        url += '?' + '&'.join(params)
+    return url
 
 
 @api.route('/api/products')
@@ -91,25 +104,40 @@ def get_api_products():
 
 @api.route('/api/outfit', methods=['POST'])
 def post_api_outfit():
-    data = json.loads(request.data)
-    data['themes'] = parse_themes(data['desc'])
-    data['comments'] = []
-    data['likes'] = 0
-    data['id'] = str(uuid.uuid4())
-    data['price'] = sum([prod['product']['retailPrice']['usdPrice']
-                         for prods in data['products'].values()
-                         for prod in prods.values()])
-    print(f'Posting outfit: {data}')
-    db.session.add(Outfit(id=data['id'], title=data['title'], desc=data['desc'], likes=data['likes'], 
-                    price=data['price'], date=data['date'], name=data['name'],
-                    products=data['products'], comments=data['comments']))
-    db.session.add(Theme(name=data['theme'], outfitid=data['id']))
-    db.session.add(Part(name=data['theme'], outfitid=data['id']))
-    db.session.add(Collection(name=data['theme'], outfitid=data['id']))
-    db.session.add(Designer(name=data['theme'], outfitid=data['id']))
-    db.session.commit()
+    """
+    Posts input outfit data into database
+    :return: id of the added outfit
+    """
+    outfit_id = uuid.uuid4()
+
+    # TODO post outfit into database
     
-    return '/'
+    return str(outfit_id)
+
+
+def parse_query(query):
+    """
+    Extract from a string query a list of themes, product parts,
+    product collections, and product designers
+
+    :param query: a string text without any particular format,
+        except for '#' to specify the start of a theme
+    :return: an dictionary with the following key-value pairs:
+        'themes': [list of themes ..]
+        'parts': [list of product parts ...]
+        'collections': [list of product collections ...]
+        'designers': [list of product designers ...]
+    """
+    selectors = {
+        'themes': [],
+        'parts': [],
+        'collections': [],
+        'designers': []
+    }
+
+    # TODO parse query
+
+    return selectors
 
 
 @api.route('/api/outfits')
@@ -139,7 +167,7 @@ def get_api_outfits():
     selectors = parse_query(query)
     # TODO implement fetch outfits
 
-    return jsonify(mock_db['trending'])
+    return jsonify(load_mock_db()['trending'])
   
 
 @api.route('/api/trending')
@@ -155,7 +183,7 @@ def get_api_trending():
 
     # TODO fetch trending
 
-    return jsonify(mock_db['trending'])
+    return jsonify(load_mock_db()['trending'])
 
 
 @api.route('/api/like', methods=['POST'])
@@ -176,46 +204,3 @@ def post_api_unlike():
     # TODO increment likes of input outfit
 
     return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
-
-
-def load_settings():
-    settings = json.load(open('data-settings.json', 'r'))
-    return settings
-
-
-def build_products_url(cat_id, **kwargs):
-    settings = load_settings()
-    url = f'{settings["baseUrl"]}/public/categories/{cat_id}/products'
-    params = [f'{k}={v}' for k, v in kwargs.items() if v]
-    if len(params) > 0:
-        url += '?' + '&'.join(params)
-    return url
-
-
-def parse_query(query):
-    """
-    Extract from a string query a list of themes, product parts, 
-    product collections, and product designers
-    
-    :param query: a string text without any particular format,
-        except for '#' to specify the start of a theme
-    :return: an dictionary with the following key-value pairs:
-        'themes': [list of themes ..]
-        'parts': [list of product parts ...]
-        'collections': [list of product collections ...]
-        'designers': [list of product designers ...]
-    """
-    selectors = {
-        'themes': [],
-        'parts': [],
-        'collections': [],
-        'designers': []
-    }
-
-    # TODO parse query
-
-    return selectors
-
-
-def parse_themes(desc):
-    return re.findall(r'[#@][\w]+', desc)

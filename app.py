@@ -1,4 +1,5 @@
-from api import api, db
+from api import api
+from models import db
 from flask import Flask
 from flask_migrate import Migrate
 
