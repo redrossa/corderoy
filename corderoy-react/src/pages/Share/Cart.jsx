@@ -50,7 +50,7 @@ export default class Cart extends React.Component {
 
     await axios.post('/api/outfit', post)
         .then(res => {
-          this.setState({redirect: res.data});
+          this.setState({redirect: '/'});  // Redirect to home page
         });
 
     outfit.clear();
