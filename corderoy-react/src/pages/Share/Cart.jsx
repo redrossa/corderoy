@@ -1,5 +1,5 @@
 import '../../styles/Share/Cart.scss'
-import React, {createRef, useState} from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import {UserSelection} from '../../components/UserSelection';
 import {Card, CardImg} from '../../components/Card';
