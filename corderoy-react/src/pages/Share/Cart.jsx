@@ -39,13 +39,13 @@ export default class Cart extends React.Component {
       desc: event.target.desc.value,
       date: dateFmt,
       price: outfit.totalPrice(),
-      products: outfit.items,
       likes: 0,
-      comments: [],
       themes: this.parseThemes(event.target.desc.value),
-      parts: outfit.parts(),
+      designers: outfit.designers(),
       collections: outfit.collections(),
-      designers: outfit.designers()
+      parts: outfit.parts(),
+      products: outfit.items,
+      comments: []
     };
 
     await axios.post('/api/outfit', post)
