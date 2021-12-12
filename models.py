@@ -11,15 +11,15 @@ class Outfit(db.Model):
     __tablename__ = 'outfits'
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    title = db.Column(db.Unicode)
-    desc = db.Column(db.Unicode)
+    title = db.Column(db.UnicodeText)
+    desc = db.Column(db.UnicodeText)
     date = db.Column(db.Date)
     likes = db.Column(db.Integer)
     price = db.Column(db.Numeric)
-    themes = db.column(ARRAY(db.Unicode))
-    designers = db.Column(ARRAY(db.Unicode))
-    collections = db.Column(ARRAY(db.Unicode))
-    parts = db.Column(ARRAY(db.Unicode))
+    themes = db.column(ARRAY(db.UnicodeText))
+    designers = db.Column(ARRAY(db.UnicodeText))
+    collections = db.Column(ARRAY(db.UnicodeText))
+    parts = db.Column(ARRAY(db.UnicodeText))
     products = db.Column(JSONB)
     comments = db.Column(JSONB)
 
