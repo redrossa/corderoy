@@ -16,7 +16,7 @@ class Outfit(db.Model):
     date = db.Column(db.Date)
     likes = db.Column(db.Integer)
     price = db.Column(db.Numeric)
-    themes = db.column(ARRAY(db.UnicodeText))
+    themes = db.Column(ARRAY(db.UnicodeText))
     designers = db.Column(ARRAY(db.UnicodeText))
     collections = db.Column(ARRAY(db.UnicodeText))
     parts = db.Column(ARRAY(db.UnicodeText))
