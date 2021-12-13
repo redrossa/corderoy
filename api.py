@@ -126,7 +126,7 @@ def post_api_outfit():
                     data['comments'])
     db.session.add(outfit)
     db.session.commit()
-    print(f'{repr(outfit)} has been added successfully.')
+    print(f'{repr(outfit)} has been added successfully')
     
     return str(outfit_id)
 
@@ -221,8 +221,10 @@ def get_api_trending():
 def post_api_like():
     outfit_id = request.args.get('outfit-id')
 
-    print(f'like {outfit_id}')
-    # TODO increment likes of input outfit
+    outfit = db.session.query(Outfit).filter(Outfit.id == outfit_id).one()
+    outfit.likes += 1
+    db.session.commit()
+    print(f'{repr(outfit)} likes incremented')
 
     return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
 
@@ -231,7 +233,9 @@ def post_api_like():
 def post_api_unlike():
     outfit_id = request.args.get('outfit-id')
 
-    print(f'unlike {outfit_id}')
-    # TODO increment likes of input outfit
+    outfit = db.session.query(Outfit).filter(Outfit.id == outfit_id).one()
+    outfit.likes = max(outfit.likes - 1, 0)
+    db.session.commit()
+    print(f'{repr(outfit)} likes decremented')
 
     return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
