@@ -38,13 +38,10 @@ export default class PostDetail extends React.Component {
     });
 
     return usdFormatter.format(Object.values(items)
-    .map(coll => Object.values(coll))
-    .flat()
-    .filter(dict => Object.keys(dict).length !== 0)
-    .map(productCode => Object.values(productCode))
-    .flat()
-    .map(item => item.product.retailPrice.usdPrice)
-    .reduce((a, b) => a + b, 0)); 
+        .map(coll => Object.values(coll))
+        .flat()
+        .map(item => item.product.retailPrice.usdPrice)
+        .reduce((a, b) => a + b, 0));
   }
 
   handleLike(event) {
