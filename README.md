@@ -17,13 +17,13 @@ This is a Capstone project under the mentorship of Amazon.
      "dbname": "<the name of the database created in step 2>"   
    }
    ```
-5. In the project root directory, install the following python packages (you may want to setup a virtual environment first):
+5. In the project root directory, install the required python packages (you may want to setup a virtual environment first) with
    ```
-   Flask
-   Flask-SQLAlchemy
-   Flask-Migrate
-   psycopg2
-   requests
+   pip3 install Flask
+   pip3 install Flask-SQLAlchemy
+   pip3 install Flask-Migrate
+   pip3 install psycopg2
+   pip3 install requests
    ```
 6. In the same directory, run the following commands in order:
    ```shell
