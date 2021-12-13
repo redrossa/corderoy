@@ -4,6 +4,7 @@ import uuid
 import requests
 from flask import Blueprint, request, jsonify
 
+from models import db, Outfit
 
 api = Blueprint('api', __name__)
 
@@ -109,8 +110,22 @@ def post_api_outfit():
     :return: id of the added outfit
     """
     outfit_id = uuid.uuid4()
-
-    # TODO post outfit into database
+    data = json.loads(request.data)
+    outfit = Outfit(outfit_id,
+                    data['title'],
+                    data['desc'],
+                    data['date'],
+                    data['likes'],
+                    data['price'],
+                    data['themes'],
+                    data['designers'],
+                    data['collections'],
+                    data['parts'],
+                    data['products'],
+                    data['comments'])
+    db.session.add(outfit)
+    db.session.commit()
+    print(f'{repr(outfit)} has been added successfully.')
     
     return str(outfit_id)
 
