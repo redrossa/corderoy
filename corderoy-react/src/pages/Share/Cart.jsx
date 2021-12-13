@@ -1,5 +1,5 @@
 import '../../styles/Share/Cart.scss'
-import React, {createRef, useState} from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import {UserSelection} from '../../components/UserSelection';
 import {Card, CardImg} from '../../components/Card';
@@ -28,7 +28,7 @@ export default class Cart extends React.Component {
         String(localDate.getUTCFullYear()).padStart(4, '0'),
         String(localDate.getUTCMonth() + 1).padStart(2, '0'),
         String(localDate.getUTCDate()).padStart(2, '0')
-    ].join('-') + 'T' + [
+    ].join('-') + ' ' + [
         String(localDate.getUTCHours()).padStart(2, '0'),
         String(localDate.getUTCMinutes()).padStart(2, '0'),
         String(localDate.getUTCSeconds()).padStart(2, '0')
@@ -39,18 +39,18 @@ export default class Cart extends React.Component {
       desc: event.target.desc.value,
       date: dateFmt,
       price: outfit.totalPrice(),
-      products: outfit.items,
       likes: 0,
-      comments: [],
       themes: this.parseThemes(event.target.desc.value),
-      parts: outfit.parts(),
+      designers: outfit.designers(),
       collections: outfit.collections(),
-      designers: outfit.designers()
+      parts: outfit.parts(),
+      products: outfit.items,
+      comments: []
     };
 
     await axios.post('/api/outfit', post)
         .then(res => {
-          this.setState({redirect: res.data});
+          this.setState({redirect: '/'});  // Redirect to home page
         });
 
     outfit.clear();

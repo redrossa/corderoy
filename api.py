@@ -1,17 +1,17 @@
+import datetime
 import http
 import json
 import re
 import uuid
 import requests
+import sqlalchemy
 from flask import Blueprint, request, jsonify
-from models import Outfit, Theme, Product, db
-from sqlalchemy.sql import text
-import sys
+from sqlalchemy import func, cast
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.util import reduce
 
-
-
-
-
+from models import db, Outfit
 
 api = Blueprint('api', __name__)
 
@@ -23,8 +23,12 @@ shopbopSession.headers.update({
 })
 
 
+def load_settings():
+    return json.load(open('data-settings.json', 'r'))
 
 
+def load_mock_db():
+    return json.load(open('mock-db.json', 'r'))
 
 
 @api.route('/api/settings')
@@ -45,6 +49,15 @@ def get_api_collections():
     part = request.args.get('part')
     parts = [part] if part else settings['tree'].keys()
     return jsonify([k for p in parts for k in settings['tree'][p].keys()])
+
+
+def build_products_url(cat_id, **kwargs):
+    settings = load_settings()
+    url = f'{settings["baseUrl"]}/public/categories/{cat_id}/products'
+    params = [f'{k}={v}' for k, v in kwargs.items() if v]
+    if len(params) > 0:
+        url += '?' + '&'.join(params)
+    return url
 
 
 @api.route('/api/products')
@@ -99,35 +112,75 @@ def get_api_products():
 
 @api.route('/api/outfit', methods=['POST'])
 def post_api_outfit():
+    """
+    Posts input outfit data into database
+    :return: id of the added outfit
+    """
+    outfit_id = uuid.uuid4()
     data = json.loads(request.data)
-    data['themes'] = parse_themes(data['desc'])
-    data['comments'] = []
-    data['likes'] = 0
-    data['id'] = str(uuid.uuid4())
-    data['price'] = sum([prod['product']['retailPrice']['usdPrice']
-                         for prods in data['products'].values()
-                         for prod in prods.values()])
-   
-    data['product_info'] = [(prod['product']['productCode'], prod['part'], prod['collection'], prod['product']['designerName'])
-                         for prods in data['products'].values()
-                         for prod in prods.values()]
-   
-    #print(f'Posting outfit: {data}')
-    db.session.add(Outfit(id=data['id'], title=data['title'], desc=data['desc'], likes=data['likes'], 
-                    price=data['price'], date=data['date'], products=data['products'], 
-                    comments=data['comments']))
-    
-    
-    for productid, part, collection, designer in data['product_info']:    
-        db.session.add(Product(part=part, productid=productid, 
-        collection=collection, designer=designer, outfitid=data['id']))
-
-    for theme in list(set(data['themes'])):
-        db.session.add(Theme(name=theme, outfitid=data['id']))
-    
+    outfit = Outfit(outfit_id,
+                    data['title'],
+                    data['desc'],
+                    data['date'],
+                    data['likes'],
+                    data['price'],
+                    data['themes'],
+                    data['designers'],
+                    data['collections'],
+                    data['parts'],
+                    data['products'],
+                    data['comments'])
+    db.session.add(outfit)
     db.session.commit()
-    
-    return '/'
+    print(f'{repr(outfit)} has been added successfully')
+
+    return str(outfit_id)
+
+
+def parse_query(query):
+    """
+    Extract from a string query a list of themes, product parts,
+    product collections, and product designers
+
+    :param query: a string text without any particular format,
+        except for '#' to specify the start of a theme
+    :return: an dictionary with the following key-value pairs:
+        'themes': [list of themes ..]
+        'parts': [list of product parts ...]
+        'collections': [list of product collections ...]
+        'designers': [list of product designers ...]
+    """
+    selectors = {
+        'themes': [],
+        'parts': [],
+        'collections': [],
+        'designers': [],
+        'keywords': []
+    }
+
+    settings = load_settings()
+    all_parts = [k for k in settings['tree'].keys()]
+    all_collections = [collection for part in settings['tree'].values() for collection in part.keys()]
+    all_designers = [designer['name'] for designer in
+                     shopbopSession.get(f'{settings["baseUrl"]}/public/folders').json()['designerCategories']]
+
+    words = query.split()
+    for word in words:
+        word_lower = word.lower()
+        is_theme = False
+        if re.match(r'#[\w]+', word_lower):
+            selectors['themes'].append(word)
+            is_theme = True
+        if any(word_lower == part.lower() for part in all_parts):
+            selectors['parts'].append(word)
+        if any(word_lower == collection.lower() for collection in all_collections):
+            selectors['collections'].append(word)
+        if any(word_lower == designer.lower() for designer in all_designers):
+            selectors['designers'].append(word)
+        if not is_theme:
+            selectors['keywords'].append(word)
+
+    return selectors
 
 
 @api.route('/api/outfits', methods=['GET'])
@@ -154,45 +207,39 @@ def get_api_outfits():
     max_price = request.args.get('maxPrice', default=sys.float_info.max, type=float)
     limit = request.args.get('limit', default=40, type=int)
     query = request.args.get('q')
+    sort = request.args.get('sort', default='likes')  # likes | price | date
+    limit = request.args.get('limit', default=40)
+
     selectors = parse_query(query)
+    subqueries = [Outfit.query
+                      .filter(func.lower(Outfit.__dict__[k].cast(sqlalchemy.Text)).cast(ARRAY(sqlalchemy.Text))
+                              .contains(func.lower(cast(v, sqlalchemy.Text)).cast(ARRAY(sqlalchemy.Text))))
+                  for k, v in selectors.items() if v and k != 'keywords']
 
-    q = db.session.query(Outfit, Theme, Product).filter(Outfit.id == Theme.outfitid,
-                          Outfit.id == Product.outfitid).filter(Outfit.price >= min_price, 
-                          Outfit.price <= max_price)
-    
-    if theme != '':
-        q = q.filter(Theme.name == theme)
+    if selectors['keywords']:
+        subqueries.append(Outfit.query
+                          .filter(Outfit.title.op('~*')('|'.join(selectors['keywords']))))
+        subqueries.append(Outfit.query
+                          .filter(Outfit.desc.op('~*')('|'.join(selectors['keywords']))))
 
-    outfit_list = []
-    outfit = {'id': None, 'theme': [], 'productid': []}
-    for o, t, p in q.order_by(Outfit.id, Theme.name, Product.productid, text(sort)):
-        if o.id != outfit['id']: 
-            outfit_list.append(outfit.copy())
-            outfit['id'] = o.id
-            outfit['title'] = o.title
-            outfit['likes'] = o.likes
-            outfit['desc'] = o.desc
-            outfit['price'] = o.price
-            outfit['date'] = o.date
-            outfit['products'] = [o.products]
-            outfit['comments'] = [o.comments]
-            outfit['theme'] = [t.name]
-            outfit['productid'] = [p.productid]
-            outfit['part'] = [p.part]
-            outfit['designer'] = [p.designer]
-            outfit['collection'] = [p.collection]
-        if t.name not in outfit['theme'] and t.name != '':
-            outfit['theme'] += [t.name]
-        if p.productid not in outfit['productid']:
-            outfit['productid'] += [p.productid]
-            outfit['part'] += [p.part]
-            outfit['designer'] += [p.designer]
-            outfit['collection'] += [p.collection]
-    outfit_list.append(outfit.copy())
-    print([outfit['likes'] for outfit in outfit_list[1:]])
+    outfits = reduce(lambda p, q: p.union(q), subqueries).limit(limit).all()
+    outfits = list(set(outfits))
+    results = [{
+        'id': outfit.id,
+        'title': outfit.title,
+        'desc': outfit.desc,
+        'date': outfit.date,
+        'likes': outfit.likes,
+        'price': outfit.price,
+        'themes': outfit.themes,
+        'designers': outfit.designers,
+        'collections': outfit.collections,
+        'parts': outfit.parts,
+        'products': outfit.products,
+        'comments': outfit.comments,
+    } for outfit in outfits]
 
-    return jsonify(outfit_list[1:limit+1])
-    
+    return jsonify(results)
 
 @api.route('/api/trending', methods = ['GET'])
 def get_api_trending():
@@ -202,62 +249,37 @@ def get_api_trending():
     
     :return: sorted list of queried outfits
     """
-    days = request.args.get('days')
+    days = request.args.get('days', default=30)
     limit = request.args.get('limit', default=40)
 
-    # TODO fetch trending
+    rel_time = datetime.datetime.utcnow() - datetime.timedelta(days=days)
+    outfits = Outfit.query.filter(Outfit.date >= rel_time).order_by(Outfit.likes.desc()).limit(limit).all()
+    results = [{
+        'id': outfit.id,
+        'title': outfit.title,
+        'desc': outfit.desc,
+        'date': outfit.date,
+        'likes': outfit.likes,
+        'price': outfit.price,
+        'themes': outfit.themes,
+        'designers': outfit.designers,
+        'collections': outfit.collections,
+        'parts': outfit.parts,
+        'products': outfit.products,
+        'comments': outfit.comments,
+    } for outfit in outfits]
 
-    q = db.session.query(Outfit, Theme, Product).filter(Outfit.id == Theme.outfitid,
-                          Outfit.id == Product.outfitid)
-    
-    outfit_list = []
-    outfit = {'id': None, 'theme': [], 'productid': []}
-    
-    for o, t, p in q.order_by(text('likes'), text('date'), text('price'), 
-                            Outfit.id, Theme.name, Product.productid):
-        
-        if o.id != outfit['id']: 
-            
-            outfit_list.append(outfit.copy())
-            outfit['id'] = o.id
-            outfit['title'] = o.title
-            outfit['likes'] = o.likes
-            outfit['desc'] = o.desc
-            outfit['price'] = o.price
-            outfit['date'] = o.date
-            outfit['products'] = [o.products]
-            outfit['comments'] = [o.comments]
-            outfit['theme'] = [t.name]
-            outfit['productid'] = [p.productid]
-            outfit['part'] = [p.part]
-            outfit['designer'] = [p.designer]
-            outfit['collection'] = [p.collection]
-        if t.name not in outfit['theme'] and t.name != '':
-            outfit['theme'] += [t.name]
-        if p.productid not in outfit['productid']:
-            outfit['productid'] += [p.productid]
-            outfit['part'] += [p.part]
-            outfit['designer'] += [p.designer]
-            outfit['collection'] += [p.collection]
-    outfit_list.append(outfit.copy())
-    print([outfit['likes'] for outfit in outfit_list[1:]])
-
-    return jsonify(outfit_list[1:])
-    
-    
-    
-
+    return jsonify(results)
 
 
 @api.route('/api/like', methods=['POST'])
 def post_api_like():
     outfit_id = request.args.get('outfit-id')
 
-    print(f'like {outfit_id}')
-   
-    q = db.session.query(Outfit).filter(Outfit.id == outfit_id).one()
-    q.likes += 1
+    outfit = db.session.query(Outfit).filter(Outfit.id == outfit_id).one()
+    outfit.likes += 1
     db.session.commit()
+    print(f'{repr(outfit)} likes incremented')
 
     return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
 
@@ -266,60 +288,9 @@ def post_api_like():
 def post_api_unlike():
     outfit_id = request.args.get('outfit-id')
 
-    print(f'unlike {outfit_id}')
-    q = db.session.query(Outfit).filter(Outfit.id == outfit_id).one()
-    q.likes = max(q.likes - 1, 0)
+    outfit = db.session.query(Outfit).filter(Outfit.id == outfit_id).one()
+    outfit.likes = max(outfit.likes - 1, 0)
     db.session.commit()
+    print(f'{repr(outfit)} likes decremented')
 
     return '', http.HTTPStatus.NO_CONTENT  # return empty response, so client doesn't redirect
-
-
-def load_settings():
-    settings = json.load(open('data-settings.json', 'r'))
-    return settings
-
-
-def build_products_url(cat_id, **kwargs):
-    settings = load_settings()
-    url = f'{settings["baseUrl"]}/public/categories/{cat_id}/products'
-    params = [f'{k}={v}' for k, v in kwargs.items() if v]
-    if len(params) > 0:
-        url += '?' + '&'.join(params)
-    return url
-
-
-def parse_query(query):
-    """
-    Extract from a string query a list of themes, product parts, 
-    product collections, and product designers
-    
-    :param query: a string text without any particular format,
-        except for '#' to specify the start of a theme
-    :return: an dictionary with the following key-value pairs:
-        'themes': [list of themes ..]
-        'parts': [list of product parts ...]
-        'collections': [list of product collections ...]
-        'designers': [list of product designers ...]
-    """
-    selectors = {
-        'themes': [],
-        'parts': [],
-        'collections': [],
-        'designers': []
-    }
-
-    settings = load_settings()
-    selectors['theme'] += list(set(re.findall(r'[#@][\w]+', query)))
-    all_parts = list(settings['tree'].keys())
-    all_collections = [collection for part in settings['tree'].values() for collection in part.keys()]
-    all_designers = []
-
-    if query: 
-        re.findall(r"(?=("+'|'.join(selectors['collections'])+r"))", query)
-  
-
-    return selectors
-
-
-def parse_themes(desc):
-    return list(set(re.findall(r'[#@][\w]+', desc)))
