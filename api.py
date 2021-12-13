@@ -198,7 +198,7 @@ def get_api_trending():
     limit = request.args.get('limit', default=40)
 
     rel_time = datetime.datetime.utcnow() - datetime.timedelta(days=days)
-    outfits = Outfit.query.filter(Outfit.date >= rel_time).limit(limit).all()
+    outfits = Outfit.query.filter(Outfit.date >= rel_time).order_by(Outfit.likes.desc()).limit(limit).all()
     results = [{
         'id': outfit.id,
         'title': outfit.title,
