@@ -1,3 +1,4 @@
+import datetime
 import http
 import json
 import uuid
@@ -193,12 +194,27 @@ def get_api_trending():
     
     :return: sorted list of queried outfits
     """
-    days = request.args.get('days')
+    days = request.args.get('days', default=30)
     limit = request.args.get('limit', default=40)
 
-    # TODO fetch trending
+    rel_time = datetime.datetime.utcnow() - datetime.timedelta(days=days)
+    outfits = Outfit.query.filter(Outfit.date >= rel_time).limit(limit).all()
+    results = [{
+        'id': outfit.id,
+        'title': outfit.title,
+        'desc': outfit.desc,
+        'date': outfit.date,
+        'likes': outfit.likes,
+        'price': outfit.price,
+        'themes': outfit.themes,
+        'designers': outfit.designers,
+        'collections': outfit.collections,
+        'parts': outfit.parts,
+        'products': outfit.products,
+        'comments': outfit.comments,
+    } for outfit in outfits]
 
-    return jsonify(load_mock_db()['trending'])
+    return jsonify(results)
 
 
 @api.route('/api/like', methods=['POST'])
