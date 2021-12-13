@@ -20,7 +20,7 @@ export default function Feed(props) {
   };
 
   useEffect(() => {
-    axios.get(`/api/outfits?q=${query}&sort=${!sort ? 'likes' : sort}`)
+    axios.get(`/api/outfits?q=${encodeURIComponent(query)}&sort=${!sort ? 'likes' : sort}`)
         .then(resp => {
           setPosts(resp.data);
         });
