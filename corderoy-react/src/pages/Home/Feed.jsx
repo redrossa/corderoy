@@ -16,7 +16,6 @@ export default function Feed(props) {
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
-    console.log(encodeURIComponent(event.target.searchbar.value))
     navigate(`/posts?q=${encodeURIComponent(event.target.searchbar.value)}&sort=${event.target.sort.value}`)
   };
 
