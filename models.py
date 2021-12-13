@@ -13,7 +13,7 @@ class Outfit(db.Model):
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = db.Column(db.UnicodeText)
     desc = db.Column(db.UnicodeText)
-    date = db.Column(db.Date)
+    date = db.Column(db.DateTime)
     likes = db.Column(db.Integer)
     price = db.Column(db.Numeric)
     themes = db.Column(ARRAY(db.UnicodeText))
