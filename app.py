@@ -30,21 +30,19 @@ def build_db_url(user, pwd, host, port, dbname):
     return f'postgresql://{user}:{pwd}@{host}:{port}/{dbname}'
 
 
-def setup_app():
-    settings = json.load(open('server-settings.json', 'r'))
-    app.config['SQLALCHEMY_DATABASE_URI'] = build_db_url(
-        settings['user'],
-        settings['word'],
-        settings['host'],
-        settings['port'],
-        settings['dbname'])
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+settings = json.load(open('server-settings.json', 'r'))
+app.config['SQLALCHEMY_DATABASE_URI'] = build_db_url(
+    settings['user'],
+    settings['pass'],
+    settings['host'],
+    settings['port'],
+    settings['dbname'])
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    db.init_app(app)
-    migrate = Migrate(app, db)
+db.init_app(app)
+migrate = Migrate(app, db)
 
 
 if __name__ == '__main__':
-    setup_app()
     app.config['DEBUG'] = True
     app.run(debug=True)
