@@ -16,7 +16,7 @@ export default function Landing(props) {
   };
 
   const handleSubmit = (event) => {
-    navigate(`/posts?q=${event.target.searchbar.value}`);
+    navigate(`/posts?q=${encodeURIComponent(event.target.searchbar.value)}`);
   };
 
   useEffect(() => {
