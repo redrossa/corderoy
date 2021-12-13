@@ -39,3 +39,9 @@ class Outfit(db.Model):
 
     def __repr__(self):
         return f'<Outfit {self.id}>'
+
+    def __hash__(self):
+        return hash(self.id)
+
+    def __eq__(self, other):
+        return self.id == other.id

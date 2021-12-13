@@ -4,7 +4,12 @@ import json
 import re
 import uuid
 import requests
+import sqlalchemy
 from flask import Blueprint, request, jsonify
+from sqlalchemy import func, cast
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.util import reduce
 
 from models import db, Outfit
 
@@ -128,7 +133,7 @@ def post_api_outfit():
     db.session.add(outfit)
     db.session.commit()
     print(f'{repr(outfit)} has been added successfully')
-    
+
     return str(outfit_id)
 
 
@@ -200,10 +205,36 @@ def get_api_outfits():
     limit = request.args.get('limit', default=40)
 
     selectors = parse_query(query)
-    # TODO implement fetch outfits
+    subqueries = [Outfit.query
+                      .filter(func.lower(Outfit.__dict__[k].cast(sqlalchemy.Text)).cast(ARRAY(sqlalchemy.Text))
+                              .contains(func.lower(cast(v, sqlalchemy.Text)).cast(ARRAY(sqlalchemy.Text))))
+                  for k, v in selectors.items() if v and k != 'keywords']
 
-    return jsonify(load_mock_db()['trending'])
-  
+    if selectors['keywords']:
+        subqueries.append(Outfit.query
+                          .filter(Outfit.title.op('~*')('|'.join(selectors['keywords']))))
+        subqueries.append(Outfit.query
+                          .filter(Outfit.desc.op('~*')('|'.join(selectors['keywords']))))
+
+    outfits = reduce(lambda p, q: p.union(q), subqueries).limit(limit).all()
+    outfits = list(set(outfits))
+    results = [{
+        'id': outfit.id,
+        'title': outfit.title,
+        'desc': outfit.desc,
+        'date': outfit.date,
+        'likes': outfit.likes,
+        'price': outfit.price,
+        'themes': outfit.themes,
+        'designers': outfit.designers,
+        'collections': outfit.collections,
+        'parts': outfit.parts,
+        'products': outfit.products,
+        'comments': outfit.comments,
+    } for outfit in outfits]
+
+    return jsonify(results)
+
 
 @api.route('/api/trending')
 def get_api_trending():
