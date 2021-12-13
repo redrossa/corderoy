@@ -1,6 +1,7 @@
 import datetime
 import http
 import json
+import re
 import uuid
 import requests
 from flask import Blueprint, request, jsonify
@@ -148,10 +149,31 @@ def parse_query(query):
         'themes': [],
         'parts': [],
         'collections': [],
-        'designers': []
+        'designers': [],
+        'keywords': []
     }
 
-    # TODO parse query
+    settings = load_settings()
+    all_parts = [k for k in settings['tree'].keys()]
+    all_collections = [collection for part in settings['tree'].values() for collection in part.keys()]
+    all_designers = [designer['name'] for designer in
+                     shopbopSession.get(f'{settings["baseUrl"]}/public/folders').json()['designerCategories']]
+
+    words = query.split()
+    for word in words:
+        word_lower = word.lower()
+        is_theme = False
+        if re.match(r'#[\w]+', word_lower):
+            selectors['themes'].append(word)
+            is_theme = True
+        if any(word_lower == part.lower() for part in all_parts):
+            selectors['parts'].append(word)
+        if any(word_lower == collection.lower() for collection in all_collections):
+            selectors['collections'].append(word)
+        if any(word_lower == designer.lower() for designer in all_designers):
+            selectors['designers'].append(word)
+        if not is_theme:
+            selectors['keywords'].append(word)
 
     return selectors
 
@@ -176,9 +198,6 @@ def get_api_outfits():
     query = request.args.get('q')
     sort = request.args.get('sort', default='likes')  # likes | price | date
     limit = request.args.get('limit', default=40)
-
-    print(query)
-    print(sort)
 
     selectors = parse_query(query)
     # TODO implement fetch outfits
