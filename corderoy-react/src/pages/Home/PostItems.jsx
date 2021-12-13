@@ -22,7 +22,7 @@ export default class PostItems extends React.Component {
     console.log('items', this.props.items);
     
     const orderedItems = collections.collectionRank
-          .map(coll => this.props.items[0][coll])
+          .map(coll => this.props.items[coll])
           .filter(collProds => Object.keys(collProds).length)
           .map(collProds => Object.values(collProds))
           .flat()
