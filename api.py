@@ -7,7 +7,6 @@ import requests
 import sqlalchemy
 from flask import Blueprint, request, jsonify
 from sqlalchemy import func, cast
-from sqlalchemy.dialects import postgresql
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.util import reduce
 
@@ -200,12 +199,7 @@ def get_api_outfits():
         
     :return: sorted list of queried outfits
     """
-    
-    theme = request.args.get('theme', default='', type=str)
-    sort = request.args.get('sort', default='likes', type=str)  # likes | price | date
-    min_price = request.args.get('minPrice', default=0, type=float)
-    max_price = request.args.get('maxPrice', default=sys.float_info.max, type=float)
-    limit = request.args.get('limit', default=40, type=int)
+
     query = request.args.get('q')
     sort = request.args.get('sort', default='likes')  # likes | price | date
     limit = request.args.get('limit', default=40)
@@ -240,6 +234,7 @@ def get_api_outfits():
     } for outfit in outfits]
 
     return jsonify(results)
+
 
 @api.route('/api/trending', methods = ['GET'])
 def get_api_trending():
