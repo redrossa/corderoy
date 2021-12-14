@@ -1,5 +1,6 @@
-import argparse
 import json
+
+import flask
 
 from api import api
 from models import db
@@ -7,23 +8,13 @@ from flask import Flask
 from flask_migrate import Migrate
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='corderoy-react/build', static_url_path='/')
 app.register_blueprint(api)
 
 
 @app.route('/')
 def get_home():
-    return 'Home'
-
-
-@app.route('/wardrobe')
-def get_wardrobe():
-    return 'Wardrobe'
-
-
-@app.route('/share')
-def get_share():
-    return 'Share'
+    return flask.send_from_directory(app.static_folder, 'index.html')
 
 
 def build_db_url(user, pwd, host, port, dbname):

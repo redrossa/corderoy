@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import {HashRouter, Route, Routes} from 'react-router-dom';
 import {UserSelection} from './components/UserSelection';
 import {Feed, Home} from './pages/Home';
 import {Wardrobe, Catalog} from './pages/Wardrobe';
@@ -24,7 +24,7 @@ function App() {
       <div className="App">
         <Collections.Provider value={collections}>
           <UserSelection.Provider value={outfit}>
-            <BrowserRouter>
+            <HashRouter>
               <Routes>
                 <Route path="/" exact element={<Home/>} />
                 <Route path="/posts" element={<Feed />} />
@@ -33,7 +33,7 @@ function App() {
                 </Route>
                 <Route path="/share" element={<Share/>} />
               </Routes>
-            </BrowserRouter>
+            </HashRouter>
           </UserSelection.Provider>
         </Collections.Provider>
       </div>
